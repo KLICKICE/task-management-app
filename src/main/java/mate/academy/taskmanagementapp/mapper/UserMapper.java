@@ -1,9 +1,12 @@
 package mate.academy.taskmanagementapp.mapper;
 
 import mate.academy.taskmanagementapp.config.MapConfig;
-import mate.academy.taskmanagementapp.dto.*;
+import mate.academy.taskmanagementapp.dto.UserRegistrationDto;
+import mate.academy.taskmanagementapp.dto.UserResponseDto;
+import mate.academy.taskmanagementapp.dto.UserUpdateDto;
 import mate.academy.taskmanagementapp.model.User;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapConfig.class)
 public interface UserMapper {

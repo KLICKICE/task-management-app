@@ -1,9 +1,9 @@
 package mate.academy.taskmanagementapp.dto;
 
-import lombok.*;
-import mate.academy.taskmanagementapp.model.Role;
-
 import java.util.Set;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import mate.academy.taskmanagementapp.model.Role;
 
 @Data
 @EqualsAndHashCode
