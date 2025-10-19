@@ -1,11 +1,10 @@
 package mate.academy.taskmanagementapp.service.role;
 
-import lombok.*;
-import mate.academy.taskmanagementapp.model.Role;
-import mate.academy.taskmanagementapp.repository.*;
-import org.springframework.stereotype.*;
-
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import mate.academy.taskmanagementapp.model.Role;
+import mate.academy.taskmanagementapp.repository.RoleRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

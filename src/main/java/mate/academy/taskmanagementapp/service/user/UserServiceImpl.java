@@ -1,5 +1,6 @@
 package mate.academy.taskmanagementapp.service.user;
 
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import mate.academy.taskmanagementapp.dto.UserLoginDto;
 import mate.academy.taskmanagementapp.dto.UserRegistrationDto;
@@ -15,9 +16,6 @@ import mate.academy.taskmanagementapp.repository.RoleRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +46,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public UserResponseDto findById(Long id) {
+        User userById = userRepository.findById(id).orElseThrow(()
+                -> new EntityNotFoundException("Can't find user by id: " + id));
+        return userMapper.toDto(userById);
     }
 
     @Override
@@ -65,11 +65,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateProfile(Long id, UserUpdateDto userUpdateDto) {
+    public UserResponseDto updateProfile(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AuthenticationException("Can't find user by id: " + id));
         userMapper.updateUserFromDto(userUpdateDto, user);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
     @Override
