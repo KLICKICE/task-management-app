@@ -205,7 +205,7 @@
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="separateLineBetweenGroups" value="true"/>
             <property name="customImportOrderRules"
-                      value="STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS###PACKAGE"/>
+                      value="STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS"/>
         </module>
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceBefore">
