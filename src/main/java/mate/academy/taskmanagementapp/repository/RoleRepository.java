@@ -1,6 +1,7 @@
 package mate.academy.taskmanagementapp.repository;
 
 import java.util.Optional;
+
 import mate.academy.taskmanagementapp.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
