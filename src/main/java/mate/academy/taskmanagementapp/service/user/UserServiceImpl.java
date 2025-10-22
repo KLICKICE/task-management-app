@@ -3,10 +3,10 @@ package mate.academy.taskmanagementapp.service.user;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
-import mate.academy.taskmanagementapp.dto.UserLoginDto;
-import mate.academy.taskmanagementapp.dto.UserRegistrationDto;
-import mate.academy.taskmanagementapp.dto.UserResponseDto;
-import mate.academy.taskmanagementapp.dto.UserUpdateDto;
+import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
+import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
+import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
+import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
 import mate.academy.taskmanagementapp.exception.AuthenticationException;
 import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
 import mate.academy.taskmanagementapp.exception.RegistrationException;

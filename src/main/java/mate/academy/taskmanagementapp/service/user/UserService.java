@@ -1,9 +1,9 @@
 package mate.academy.taskmanagementapp.service.user;
 
-import mate.academy.taskmanagementapp.dto.UserLoginDto;
-import mate.academy.taskmanagementapp.dto.UserRegistrationDto;
-import mate.academy.taskmanagementapp.dto.UserResponseDto;
-import mate.academy.taskmanagementapp.dto.UserUpdateDto;
+import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
+import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
+import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
+import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
 import mate.academy.taskmanagementapp.model.Role;
 
 public interface UserService {

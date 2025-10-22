@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.dto;
+package mate.academy.taskmanagementapp.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
