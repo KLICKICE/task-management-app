@@ -12,9 +12,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByAssignedUser(User user);
 
-    List<Task> findAllByStatus(TaskStatus status);
+    List<Task> findAllByStatus(TaskStatus.StatusTask status);
 
-    List<Task> findAllByPriority(TaskPriority priority);
+    List<Task> findAllByPriority(TaskPriority.PriorityStatus priority);
 
-    List<Task> findAllByDeadlineBefore(LocalDateTime date);
+    List<Task> findAllByDeadlineBefore(LocalDateTime deadline);
 }

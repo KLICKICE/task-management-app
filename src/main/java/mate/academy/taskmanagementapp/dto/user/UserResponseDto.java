@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.dto;
+package mate.academy.taskmanagementapp.dto.user;
 
 import java.util.Set;
 
