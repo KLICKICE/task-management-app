@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.task;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,20 +14,19 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "project-statuses")
-public class ProjectStatus {
-
+@Table(name = "task_priorities")
+public class TaskPriority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusProject statusProject;
+    private PriorityStatus priorityStatus;
 
-    public enum StatusProject {
-        INITIATED,
-        IN_PROGRESS,
-        COMPLETED
+    public enum PriorityStatus {
+        LOW,
+        MEDIUM,
+        HIGH
     }
 }

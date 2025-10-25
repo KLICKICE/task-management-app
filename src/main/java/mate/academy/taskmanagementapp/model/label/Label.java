@@ -1,8 +1,7 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.label;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,17 +12,15 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "roles")
-public class Role {
+@Table(name = "labels")
+public class Label {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private RoleName roleName;
+    @Column(nullable = false)
+    private String name;
 
-    public enum RoleName {
-        USER,
-        ADMIN
-    }
+    @Column(nullable = false)
+    private String color;
 }

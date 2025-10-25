@@ -1,6 +1,5 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.role;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,19 +13,17 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "task_priorities")
-public class TaskPriority {
+@Table(name = "roles")
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PriorityStatus priorityStatus;
+    private RoleName roleName;
 
-    public enum PriorityStatus {
-        LOW,
-        MEDIUM,
-        HIGH
+    public enum RoleName {
+        USER,
+        ADMIN
     }
 }

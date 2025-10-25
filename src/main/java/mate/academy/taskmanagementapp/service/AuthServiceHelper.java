@@ -2,8 +2,8 @@ package mate.academy.taskmanagementapp.service;
 
 import lombok.RequiredArgsConstructor;
 import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
-import mate.academy.taskmanagementapp.model.Role;
-import mate.academy.taskmanagementapp.model.User;
+import mate.academy.taskmanagementapp.model.role.Role;
+import mate.academy.taskmanagementapp.model.user.User;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
