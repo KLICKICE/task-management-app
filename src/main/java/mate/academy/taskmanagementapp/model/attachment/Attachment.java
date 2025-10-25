@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.attachment;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +13,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import mate.academy.taskmanagementapp.model.task.Task;
 
 @Entity
 @Getter

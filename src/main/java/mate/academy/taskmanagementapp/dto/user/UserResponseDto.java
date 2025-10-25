@@ -4,7 +4,7 @@ import java.util.Set;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import mate.academy.taskmanagementapp.model.Role;
+import mate.academy.taskmanagementapp.model.role.Role;
 
 @Data
 @EqualsAndHashCode

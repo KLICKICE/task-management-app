@@ -4,7 +4,7 @@ import mate.academy.taskmanagementapp.config.MapConfig;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
-import mate.academy.taskmanagementapp.model.Task;
+import mate.academy.taskmanagementapp.model.task.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

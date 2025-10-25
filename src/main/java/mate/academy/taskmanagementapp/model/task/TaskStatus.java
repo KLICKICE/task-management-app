@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.task;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

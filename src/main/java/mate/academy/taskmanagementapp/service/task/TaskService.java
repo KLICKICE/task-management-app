@@ -6,8 +6,8 @@ import java.util.List;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
-import mate.academy.taskmanagementapp.model.TaskPriority;
-import mate.academy.taskmanagementapp.model.TaskStatus;
+import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import mate.academy.taskmanagementapp.model.task.TaskStatus;
 
 public interface TaskService {
     TaskDto createTask(CreateTaskRequestDto createTaskRequestDto);

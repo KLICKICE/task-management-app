@@ -1,7 +1,9 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.project;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,15 +14,20 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "labels")
-public class Label {
+@Table(name = "project-statuses")
+public class ProjectStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String name;
+    private StatusProject statusProject;
 
-    @Column(nullable = false)
-    private String color;
+    public enum StatusProject {
+        INITIATED,
+        IN_PROGRESS,
+        COMPLETED
+    }
 }

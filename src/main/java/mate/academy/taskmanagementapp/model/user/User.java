@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.user;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import mate.academy.taskmanagementapp.model.role.Role;
 
 @Entity
 @Getter
