@@ -11,9 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import mate.academy.taskmanagementapp.model.task.*;
 import lombok.Getter;
 import lombok.Setter;
+import mate.academy.taskmanagementapp.model.task.Task;
 
 @Entity
 @Getter

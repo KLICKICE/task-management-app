@@ -16,12 +16,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import mate.academy.taskmanagementapp.model.label.*;
-import mate.academy.taskmanagementapp.model.project.*;
-import mate.academy.taskmanagementapp.model.user.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import mate.academy.taskmanagementapp.model.label.Label;
+import mate.academy.taskmanagementapp.model.project.Project;
+import mate.academy.taskmanagementapp.model.user.User;
 
 @Entity
 @Getter
