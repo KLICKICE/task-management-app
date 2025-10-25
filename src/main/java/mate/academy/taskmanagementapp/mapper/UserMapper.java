@@ -4,7 +4,7 @@ import mate.academy.taskmanagementapp.config.MapConfig;
 import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
 import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
 import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
-import mate.academy.taskmanagementapp.model.User;
+import mate.academy.taskmanagementapp.model.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

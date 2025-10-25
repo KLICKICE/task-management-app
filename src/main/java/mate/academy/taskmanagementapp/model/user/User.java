@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.user;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import mate.academy.taskmanagementapp.model.role.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

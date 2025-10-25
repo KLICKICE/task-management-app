@@ -1,4 +1,4 @@
-package mate.academy.taskmanagementapp.model;
+package mate.academy.taskmanagementapp.model.task;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -16,6 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import mate.academy.taskmanagementapp.model.label.*;
+import mate.academy.taskmanagementapp.model.project.*;
+import mate.academy.taskmanagementapp.model.user.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
