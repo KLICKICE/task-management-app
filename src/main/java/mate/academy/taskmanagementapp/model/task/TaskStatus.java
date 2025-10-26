@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "task_statuses")
 public class TaskStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
