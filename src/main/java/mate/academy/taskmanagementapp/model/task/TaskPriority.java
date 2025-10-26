@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "task_priorities")
 public class TaskPriority {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
