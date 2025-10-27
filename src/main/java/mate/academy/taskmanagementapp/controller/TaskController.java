@@ -31,7 +31,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @PostMapping("/createTask")
+    @PostMapping
     TaskDto createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
         return taskService.createTask(createTaskRequestDto);
     }
