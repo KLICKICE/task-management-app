@@ -20,38 +20,38 @@ public class ProjectController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
-    public ProjectDto createProject(@RequestBody CreateProjectRequestDto dto) {
+    ProjectDto createProject(@RequestBody CreateProjectRequestDto dto) {
         return projectService.createProject(dto);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
-    public ProjectDto getProjectById(@PathVariable Long id) {
+    ProjectDto getProjectById(@PathVariable Long id) {
         return projectService.getProjectById(id);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/by-owner")
-    public List<ProjectDto> findAllByOwner(@RequestParam Long ownerId) {
+    List<ProjectDto> findAllByOwner(@RequestParam Long ownerId) {
         return projectService.findAllByOwner(ownerId);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/by-status")
-    public List<ProjectDto> findAllByStatus(@RequestParam ProjectStatus.StatusProject status) {
+    List<ProjectDto> findAllByStatus(@RequestParam ProjectStatus.StatusProject status) {
         return projectService.findAllByStatus(status);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
-    public ProjectDto updateProject(@PathVariable Long id,
+    ProjectDto updateProject(@PathVariable Long id,
                                     @RequestBody ProjectUpdateDto dto) {
         return projectService.updateProject(id, dto);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable Long id) {
+    void deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
     }
 }
