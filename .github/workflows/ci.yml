@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DROPBOX_ACCESS_TOKEN: dummy_token_for_test
 
     steps:
       - uses: actions/checkout@v4
