@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-task-priorities-table
+      author: oleksandr
+      changes:
+        - createTable:
+            tableName: task_priorities
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: priority_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: priority_status
+            tableName: task_priorities
+            constraintName: uq_task_priorities_priority_status
