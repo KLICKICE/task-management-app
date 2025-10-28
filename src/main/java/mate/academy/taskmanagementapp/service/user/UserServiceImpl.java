@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateProfile(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new AuthenticationException("Can't find user by id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + id));
         userMapper.updateUserFromDto(userUpdateDto, user);
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
