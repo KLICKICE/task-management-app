@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-projects-table
+      author: oleksandr
+      changes:
+        - createTable:
+            tableName: projects
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+              - column:
+                  name: end_date
+                  type: TIMESTAMP
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: owner_id
+            baseTableName: projects
+            referencedColumnNames: id
+            referencedTableName: users
+            constraintName: fk_projects_owner
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseColumnNames: status_id
+            baseTableName: projects
+            referencedColumnNames: id
+            referencedTableName: project-statuses
+            constraintName: fk_projects_status
+            onDelete: RESTRICT

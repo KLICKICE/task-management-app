@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - include:
+      file: changelog/changes/01-roles-table-added.yaml
+  - include:
+      file: changelog/changes/02-labels-table-added.yaml
+  - include:
+      file: changelog/changes/03-project-statuses-table-added.yaml
+  - include:
+      file: changelog/changes/04-task-priorities-table-added.yaml
+  - include:
+      file: changelog/changes/05-task-statuses-table-added.yaml
+  - include:
+      file: changelog/changes/06-users-table-added.yaml
+  - include:
+      file: changelog/changes/07-projects-table-added.yaml
+  - include:
+      file: changelog/changes/08-tasks-table-added.yaml
+  - include:
+      file: changelog/changes/09-comments-table-added.yaml
+  - include:
+      file: changelog/changes/10-attachments-table-added.yaml

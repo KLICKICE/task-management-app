@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-project-statuses-table
+      author: oleksandr
+      changes:
+        - createTable:
+            tableName: project-statuses
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status_project
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            columnNames: status_project
+            tableName: project-statuses
+            constraintName: uq_project_statuses_status_project
