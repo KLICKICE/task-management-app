@@ -11,7 +11,7 @@ public interface LabelService {
 
     List<LabelDto> getAllLabels();
 
-    void updateLabelFromDto(Long id, UpdateLabelDto updateLabelDto);
+    LabelDto updateLabelFromDto(Long id, UpdateLabelDto updateLabelDto);
 
     void deleteLabel(Long id);
 }

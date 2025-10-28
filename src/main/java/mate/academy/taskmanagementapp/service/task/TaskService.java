@@ -1,27 +1,21 @@
 package mate.academy.taskmanagementapp.service.task;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
-import mate.academy.taskmanagementapp.model.task.TaskPriority;
-import mate.academy.taskmanagementapp.model.task.TaskStatus;
 
 public interface TaskService {
     TaskDto createTask(CreateTaskRequestDto createTaskRequestDto);
 
-    void deleteTask(Long id);
+    List<TaskDto> getAllTasks();
 
-    List<TaskDto> findAllByAssignedUser(Long userId);
-
-    List<TaskDto> findAllByStatus(TaskStatus.StatusTask status);
-
-    List<TaskDto> findAllByPriority(TaskPriority.PriorityStatus priority);
-
-    List<TaskDto> findAllByDeadlineBefore(LocalDateTime date);
+    TaskDto getTaskById(Long id);
 
     TaskDto updateTask(Long id, TaskUpdatedDto taskUpdatedDto);
+
+    void deleteTask(Long id);
 }
+
 

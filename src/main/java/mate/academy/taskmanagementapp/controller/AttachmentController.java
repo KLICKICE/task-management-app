@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Attachment management", description = "Operations related to attachments")
 @RestController
 @RequestMapping("/api/attachments")
 @RequiredArgsConstructor
+@Tag(name = "Attachment management", description = "Operations related to attachments")
 public class AttachmentController {
     private final AttachmentService attachmentService;
 
@@ -30,7 +30,8 @@ public class AttachmentController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
-    public List<AttachmentDto> findAllAttachmentsByTaskId(@RequestParam Long taskId) {
+    public List<AttachmentDto> getAttachmentsByTaskId(@RequestParam Long taskId) {
         return attachmentService.findAllAttachmentsByTaskId(taskId);
     }
 }
+

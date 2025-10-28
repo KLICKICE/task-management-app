@@ -31,11 +31,11 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public void updateLabelFromDto(Long id, UpdateLabelDto updateLabelDto) {
+    public LabelDto updateLabelFromDto(Long id, UpdateLabelDto updateLabelDto) {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Label not found"));
         labelMapper.updateLabelFromDto(updateLabelDto, label);
-        labelRepository.save(label);
+        return labelMapper.toDto(labelRepository.save(label));
     }
 
     @Override
