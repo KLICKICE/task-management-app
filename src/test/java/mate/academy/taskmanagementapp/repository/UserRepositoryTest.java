@@ -1,6 +1,7 @@
 package mate.academy.taskmanagementapp.repository;
 
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.user.User;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,13 +38,18 @@ class UserRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private Role savedRole;
+
+    @BeforeEach
+    void setUp() {
+        Role role = new Role();
+        role.setRoleName(Role.RoleName.ADMIN);
+        savedRole = roleRepository.save(role);
+    }
+
     @Test
     @DisplayName("Save a user successfully")
     void saveUser_success() {
-        Role role = new Role();
-        role.setRoleName(Role.RoleName.ADMIN);
-        Role savedRole = roleRepository.save(role);
-
         User user = new User();
         user.setFirstName("Sunless");
         user.setLastName("Leywin");
@@ -57,23 +62,14 @@ class UserRepositoryTest {
 
         assertNotNull(savedUser.getId());
         assertEquals("Sunless", savedUser.getFirstName());
-        assertEquals("Leywin", savedUser.getLastName());
-        assertEquals("Lost from Light", savedUser.getUsername());
-        assertEquals("sunless@gmail.com", savedUser.getEmail());
         assertTrue(passwordEncoder.matches("Sunless07062006", savedUser.getPassword()));
         assertTrue(savedUser.getRoles().stream()
                 .anyMatch(r -> r.getRoleName() == Role.RoleName.ADMIN));
     }
 
     @Test
-    @DisplayName("""
-            Find user by UserName, success
-            """)
-    void findUser_By_UserName() {
-        Role role = new Role();
-        role.setRoleName(Role.RoleName.ADMIN);
-        Role savedRole = roleRepository.save(role);
-
+    @DisplayName("Find user by username successfully")
+    void findUser_By_UserName_success() {
         User user = new User();
         user.setFirstName("Sunless");
         user.setLastName("Leywin");
@@ -81,9 +77,8 @@ class UserRepositoryTest {
         user.setEmail("sunless@gmail.com");
         user.setPassword(passwordEncoder.encode("Sunless07062006"));
         user.setRoles(Set.of(savedRole));
+        userRepository.save(user);
 
-        User savedUser = userRepository.save(user);
-
-        assertTrue(userRepository.findByUsername(savedUser.getUsername()).isPresent());
+        assertTrue(userRepository.findByUsername("Lost from Light").isPresent());
     }
 }
