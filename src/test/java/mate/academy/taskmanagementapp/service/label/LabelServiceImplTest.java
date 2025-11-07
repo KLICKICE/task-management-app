@@ -1,16 +1,24 @@
 package mate.academy.taskmanagementapp.service.label;
 
-import java.util.*;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.*;
-import org.mockito.*;
-import org.mockito.junit.jupiter.*;
-import mate.academy.taskmanagementapp.dto.label.*;
-import mate.academy.taskmanagementapp.mapper.*;
-import mate.academy.taskmanagementapp.model.label.*;
-import mate.academy.taskmanagementapp.repository.*;
-import lombok.extern.slf4j.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import mate.academy.taskmanagementapp.dto.label.CreateLabelRequestDto;
+import mate.academy.taskmanagementapp.dto.label.LabelDto;
+import mate.academy.taskmanagementapp.dto.label.UpdateLabelDto;
+import mate.academy.taskmanagementapp.mapper.LabelMapper;
+import mate.academy.taskmanagementapp.model.label.Label;
+import mate.academy.taskmanagementapp.repository.LabelRepository;
+import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
