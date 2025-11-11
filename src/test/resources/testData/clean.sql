@@ -1,0 +1,2 @@
+DELETE FROM labels;
+ALTER TABLE labels AUTO_INCREMENT = 1;
