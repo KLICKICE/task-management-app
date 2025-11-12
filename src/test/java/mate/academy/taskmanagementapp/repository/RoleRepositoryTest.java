@@ -1,5 +1,6 @@
 package mate.academy.taskmanagementapp.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,11 @@ class RoleRepositoryTest {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @BeforeEach
+    void cleanUp() {
+        roleRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("""
