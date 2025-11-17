@@ -1,6 +1,6 @@
 package mate.academy.taskmanagementapp.dto.project;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -9,6 +9,6 @@ public class ProjectUpdateDto {
     private String title;
     private Long ownerId;
     private String description;
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private String projectStatus;
 }

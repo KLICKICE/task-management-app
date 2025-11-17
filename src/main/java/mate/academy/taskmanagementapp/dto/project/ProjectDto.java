@@ -14,5 +14,5 @@ public class ProjectDto {
     private LocalDate startDate;
     private Long ownerId;
     private String description;
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 }

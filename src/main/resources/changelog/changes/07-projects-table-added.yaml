@@ -55,6 +55,6 @@ databaseChangeLog:
             baseColumnNames: status_id
             baseTableName: projects
             referencedColumnNames: id
-            referencedTableName: project-statuses
+            referencedTableName: project_statuses
             constraintName: fk_projects_status
             onDelete: RESTRICT

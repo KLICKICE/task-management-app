@@ -1,6 +1,11 @@
-DELETE FROM roles;
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE roles;
+
 ALTER TABLE roles AUTO_INCREMENT = 1;
 
 INSERT INTO roles (id, role_name)
 VALUES (1, 'USER'),
        (2, 'ADMIN');
+
+SET FOREIGN_KEY_CHECKS = 1;

@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.*;
 import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
@@ -67,7 +67,7 @@ class UserControllerTest {
         loginDto.setUsername("user");
         loginDto.setPassword("password123");
 
-        var result = mockMvc.perform(post("/api/auth/login")
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
                         .content(toJson(loginDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
