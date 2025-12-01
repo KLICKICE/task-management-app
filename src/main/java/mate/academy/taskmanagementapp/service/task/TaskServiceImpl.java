@@ -29,9 +29,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto createTask(CreateTaskRequestDto dto) {
+
         Task task = taskMapper.toEntity(dto);
         User user = userRepository.findById(dto.getAssignedUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (task.getDeadline() == null) {
+            task.setDeadline(LocalDateTime.now().plusDays(1));
+        }
+
         task.setAssignedUser(user);
         task.setCreatedAt(LocalDateTime.now());
         return taskMapper.toDto(taskRepository.save(task));

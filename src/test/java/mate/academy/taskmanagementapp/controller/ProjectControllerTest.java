@@ -40,7 +40,6 @@ class ProjectControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(scripts = {
             "/testData/clean.sql",
-            "/testData/insert_project_statuses.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -70,7 +69,6 @@ class ProjectControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(scripts = {
             "/testData/clean.sql",
-            "/testData/insert_project_statuses.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
             "/testData/projects.sql"},
@@ -86,7 +84,6 @@ class ProjectControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(scripts = {
             "/testData/clean.sql",
-            "/testData/insert_project_statuses.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
             "/testData/projects.sql"},
@@ -101,7 +98,6 @@ class ProjectControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(scripts = {
             "/testData/clean.sql",
-            "/testData/insert_project_statuses.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
             "/testData/projects.sql"},
@@ -130,7 +126,6 @@ class ProjectControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(scripts = {
             "/testData/clean.sql",
-            "/testData/insert_project_statuses.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
             "/testData/projects.sql"},
@@ -148,7 +143,7 @@ class ProjectControllerTest {
         return objectMapper.writeValueAsString(obj);
     }
 
-    private <T> T fromJson(org.springframework.test.web.servlet.MvcResult result, Class<T> clazz) throws Exception {
+    private <T> T fromJson(MvcResult result, Class<T> clazz) throws Exception {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 }

@@ -1,5 +1,7 @@
 package mate.academy.taskmanagementapp.dto.task;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,5 +13,8 @@ public class CreateTaskRequestDto {
 
     @NotNull
     private Long assignedUserId;
+
+    @NotNull
+    private LocalDateTime deadline;
 }
 
