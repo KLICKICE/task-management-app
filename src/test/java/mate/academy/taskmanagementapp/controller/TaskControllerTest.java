@@ -45,7 +45,9 @@ class TaskControllerTest {
             scripts = {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
-                    "/testData/insert_users.sql"
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -54,6 +56,7 @@ class TaskControllerTest {
         CreateTaskRequestDto dto = new CreateTaskRequestDto();
         dto.setTitle("Test Task");
         dto.setAssignedUserId(1L);
+        dto.setProjectId(1L);
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/tasks")
@@ -77,6 +80,8 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -110,6 +115,8 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD

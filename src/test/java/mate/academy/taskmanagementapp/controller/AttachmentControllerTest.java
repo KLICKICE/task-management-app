@@ -17,7 +17,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -39,12 +41,17 @@ class AttachmentControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_task.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Add attachment successfully")
     void addAttachment_success() throws Exception {
         Mockito.when(dropboxService.uploadFile(any()))
@@ -72,13 +79,18 @@ class AttachmentControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_task.sql",
-            "/testData/insert_attachment.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql",
+                    "/testData/insert_attachment.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Get attachments by taskId successfully")
     void getAttachmentsByTaskId_success() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/attachments")
