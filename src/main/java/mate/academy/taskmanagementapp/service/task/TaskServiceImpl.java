@@ -12,8 +12,12 @@ import mate.academy.taskmanagementapp.exception.AccessDeniedException;
 import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
 import mate.academy.taskmanagementapp.mapper.TaskMapper;
 import mate.academy.taskmanagementapp.model.task.Task;
+import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import mate.academy.taskmanagementapp.model.user.User;
+import mate.academy.taskmanagementapp.repository.TaskPriorityRepository;
 import mate.academy.taskmanagementapp.repository.TaskRepository;
+import mate.academy.taskmanagementapp.repository.TaskStatusRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final UserRepository userRepository;
     private final AuthServiceHelper authServiceHelper;
+    private final TaskPriorityRepository taskPriorityRepository;
+    private final TaskStatusRepository taskStatusRepository;
 
     @Override
     public TaskDto createTask(CreateTaskRequestDto dto) {
@@ -65,6 +71,31 @@ public class TaskServiceImpl implements TaskService {
         validateUserPermission(task, currentUser);
 
         taskMapper.updateTaskFromDto(dto, task);
+
+        if (dto.getAssignedUserEmail() != null) {
+            User user = userRepository.findByEmail(dto.getAssignedUserEmail())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "User not found: " + dto.getAssignedUserEmail()));
+            task.setAssignedUser(user);
+        }
+
+        if (dto.getTaskStatus() != null) {
+            TaskStatus.StatusTask statusEnum = TaskStatus.StatusTask.valueOf(dto.getTaskStatus());
+            TaskStatus status = taskStatusRepository.findByStatusTask(statusEnum)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Task status not found: " + dto.getTaskStatus()));
+            task.setStatus(status);
+        }
+
+        if (dto.getTaskPriority() != null) {
+            TaskPriority.PriorityStatus priorityEnum =
+                    TaskPriority.PriorityStatus.valueOf(dto.getTaskPriority());
+            TaskPriority priority = taskPriorityRepository.findByPriorityStatus(priorityEnum)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Task priority not found: " + dto.getTaskPriority()));
+            task.setPriority(priority);
+        }
+
         task.setUpdatedAt(LocalDateTime.now());
         return taskMapper.toDto(taskRepository.save(task));
     }

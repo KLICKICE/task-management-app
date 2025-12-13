@@ -3,6 +3,7 @@ package mate.academy.taskmanagementapp.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
+import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -73,6 +73,71 @@ class TaskControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(scripts = {
+            "/testData/clean.sql",
+            "/testData/insert_roles.sql",
+            "/testData/insert_users.sql",
+            "/testData/insert_task.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("Get task by ID successfully")
+    void getTaskById_success() throws Exception {
+        long taskId = 1L;
+
+        MvcResult result = mockMvc.perform(get("/api/tasks/{id}", taskId))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TaskDto taskDto = fromJson(result, TaskDto.class);
+
+        assertEquals(taskId, taskDto.getId());
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(scripts = {
+            "/testData/clean.sql",
+            "/testData/insert_roles.sql",
+            "/testData/insert_users.sql",
+            "/testData/insert_task.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("Update task successfully")
+    void updateTask_success() throws Exception {
+        Long id = 1L;
+
+        TaskUpdatedDto taskUpdatedDto = new TaskUpdatedDto();
+        taskUpdatedDto.setTaskPriority("HIGH");
+        taskUpdatedDto.setTitle("Test Task");
+        taskUpdatedDto.setTaskStatus("DONE");
+        taskUpdatedDto.setAssignedUserEmail("user@example.com");
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/tasks/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(taskUpdatedDto)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TaskDto updatedDto = fromJson(mvcResult, TaskDto.class);
+        assertEquals("Test Task", updatedDto.getTitle());
+        assertEquals("High", updatedDto.getTaskPriority());
+        assertEquals("DONE", updatedDto.getTaskStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(scripts = {
+            "/testData/clean.sql",
+            "/testData/insert_roles.sql",
+            "/testData/insert_users.sql",
+            "/testData/insert_task.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("Delete task successfully")
+    void deleteTask_success() throws Exception {
+        Long id = 1L;
+        mockMvc.perform(delete("/api/tasks/{id}", id))
+                .andExpect(status().isNoContent());
+    }
 
 
     private String toJson(Object obj) throws Exception {
