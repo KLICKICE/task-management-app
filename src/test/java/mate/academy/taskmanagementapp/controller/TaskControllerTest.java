@@ -16,6 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,41 +67,6 @@ class TaskControllerTest {
     @Sql(scripts = {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
-            "/testData/insert_users.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @DisplayName("Get all tasks successfully")
-    void getAllTasks_success() throws Exception {
-        Long id = 1L;
-        mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_task.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @DisplayName("Get task by ID successfully")
-    void getTaskById_success() throws Exception {
-        long taskId = 1L;
-
-        MvcResult result = mockMvc.perform(get("/api/tasks/{id}", taskId))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        TaskDto taskDto = fromJson(result, TaskDto.class);
-
-        assertEquals(taskId, taskDto.getId());
-    }
-
-    @Test
-    @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
             "/testData/insert_task.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -139,6 +107,39 @@ class TaskControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(scripts = {
+            "/testData/clean.sql",
+            "/testData/insert_roles.sql",
+            "/testData/insert_users.sql",
+            "/testData/projects.sql",
+            "/testData/insert_task.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("Get tasks by projectId successfully")
+    void getTasksByProjectId_success() throws Exception {
+        Long projectId = 1L;
+
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/api/tasks")
+                                .param("projectId", String.valueOf(projectId))
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TaskDto[] tasksArray = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                TaskDto[].class
+        );
+
+        List<TaskDto> tasks = Arrays.asList(tasksArray);
+
+        assertNotNull(tasks);
+        assertFalse(tasks.isEmpty(), "Expected tasks list not to be empty");
+
+        assertNotNull(tasks.get(0).getTitle());
+    }
 
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);

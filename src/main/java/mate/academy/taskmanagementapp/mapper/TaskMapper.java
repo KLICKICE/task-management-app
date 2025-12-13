@@ -6,6 +6,7 @@ import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -14,6 +15,7 @@ import org.mapstruct.Named;
 @Mapper(config = MapConfig.class)
 public interface TaskMapper {
 
+    @BeanMapping(ignoreUnmappedSourceProperties = {"projectId"})
     @Mapping(target = "assignedUser", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "priority", ignore = true)

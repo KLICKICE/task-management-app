@@ -16,5 +16,8 @@ public class CreateTaskRequestDto {
 
     @NotNull
     private LocalDateTime deadline;
+
+    @NotNull
+    private Long projectId;
 }
 

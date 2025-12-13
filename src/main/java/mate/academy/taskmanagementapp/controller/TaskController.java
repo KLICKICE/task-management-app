@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,13 +33,6 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDto createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
         return taskService.createTask(createTaskRequestDto);
-    }
-
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<TaskDto> getAllTasks() {
-        return taskService.getAllTasks();
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -60,6 +54,12 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
+    }
+
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping
+    public List<TaskDto> getTasks(@RequestParam Long projectId) {
+        return taskService.getTasksByProjectId(projectId);
     }
 }
 
