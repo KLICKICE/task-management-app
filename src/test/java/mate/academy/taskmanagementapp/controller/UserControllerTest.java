@@ -65,13 +65,13 @@ class UserControllerTest {
 
     @Test
     @Sql(
-            scripts = {"/testData/insert_roles.sql", "/testData/insert_users.sql"},
+            scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @DisplayName("Login existing user successfully from SQL seed data")
     void loginUser_ExistingUserFromSql_success() throws Exception {
         UserLoginDto loginDto = new UserLoginDto();
-        loginDto.setUsername("user");
+        loginDto.setUsername("user@example.com");
         loginDto.setPassword("password123");
 
         MvcResult result = mockMvc.perform(
@@ -85,12 +85,12 @@ class UserControllerTest {
         UserResponseDto actual = fromJson(result, UserResponseDto.class);
 
         assertNotNull(actual);
-        assertEquals("user", actual.getUsername());
+        assertEquals("user@example.com", actual.getUsername());
         assertEquals("user@example.com", actual.getEmail());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -102,7 +102,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -123,7 +123,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user@example.com", roles = {"ADMIN"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD

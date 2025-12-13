@@ -113,6 +113,7 @@ class TaskControllerTest {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
+            "/testData/insert_project_statuses.sql",
             "/testData/projects.sql",
             "/testData/insert_task.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -137,7 +138,6 @@ class TaskControllerTest {
 
         assertNotNull(tasks);
         assertFalse(tasks.isEmpty(), "Expected tasks list not to be empty");
-
         assertNotNull(tasks.get(0).getTitle());
     }
 

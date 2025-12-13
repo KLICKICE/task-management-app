@@ -1,6 +1,9 @@
 package mate.academy.taskmanagementapp.controller;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import mate.academy.taskmanagementapp.dto.project.CreateProjectRequestDto;
+import mate.academy.taskmanagementapp.dto.project.ProjectDto;
+import mate.academy.taskmanagementapp.dto.project.ProjectUpdateDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +15,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import mate.academy.taskmanagementapp.dto.project.CreateProjectRequestDto;
-import mate.academy.taskmanagementapp.dto.project.ProjectDto;
-import mate.academy.taskmanagementapp.dto.project.ProjectUpdateDto;
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -41,20 +42,21 @@ class ProjectControllerTest {
     @Sql(scripts = {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
-            "/testData/insert_users.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/testData/insert_users.sql",
+            "/testData/insert_project_statuses.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Create a new project successfully")
     void createProject_success() throws Exception {
         Long id = 1L;
-        CreateProjectRequestDto createProjectRequestDto = new CreateProjectRequestDto();
-        createProjectRequestDto.setTitle("My First Project");
-        createProjectRequestDto.setOwnerId(id);
-        createProjectRequestDto.setStartDate(LocalDate.now());
-        createProjectRequestDto.setEndDate(LocalDate.now().plusDays(7));
 
+        CreateProjectRequestDto dto = new CreateProjectRequestDto();
+        dto.setTitle("My First Project");
+        dto.setOwnerId(id);
+        dto.setStartDate(LocalDate.now());
+        dto.setEndDate(LocalDate.now().plusDays(7));
 
         MvcResult result = mockMvc.perform(post("/api/projects")
-                        .content(toJson(createProjectRequestDto))
+                        .content(toJson(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -71,8 +73,9 @@ class ProjectControllerTest {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
-            "/testData/projects.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/testData/insert_project_statuses.sql",
+            "/testData/projects.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Get a project successfully")
     void getProjectById() throws Exception {
         Long projectId = 1L;
@@ -86,8 +89,9 @@ class ProjectControllerTest {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
-            "/testData/projects.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/testData/insert_project_statuses.sql",
+            "/testData/projects.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Get all projects from user successfully")
     void getUserProjects() throws Exception {
         mockMvc.perform(get("/api/projects/my-projects"))
@@ -100,26 +104,27 @@ class ProjectControllerTest {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
-            "/testData/projects.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/testData/insert_project_statuses.sql",
+            "/testData/projects.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Update a project successfully")
     void updateProject() throws Exception {
         Long projectId = 1L;
 
-        ProjectUpdateDto projectUpdateDto = new ProjectUpdateDto();
-        projectUpdateDto.setTitle("Updated Project Title");
-        projectUpdateDto.setProjectStatus("COMPLETED");
-        projectUpdateDto.setEndDate(LocalDate.now().plusDays(10));
+        ProjectUpdateDto dto = new ProjectUpdateDto();
+        dto.setTitle("Updated Project Title");
+        dto.setProjectStatus("COMPLETED");
+        dto.setEndDate(LocalDate.now().plusDays(10));
 
         MvcResult result = mockMvc.perform(put("/api/projects/{id}", projectId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(projectUpdateDto)))
+                        .content(toJson(dto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        ProjectDto updatedProject = fromJson(result, ProjectDto.class);
-        assertEquals("Updated Project Title", updatedProject.getTitle());
-        assertEquals("COMPLETED", updatedProject.getProjectStatus());
+        ProjectDto updated = fromJson(result, ProjectDto.class);
+        assertEquals("Updated Project Title", updated.getTitle());
+        assertEquals("COMPLETED", updated.getProjectStatus());
     }
 
     @Test
@@ -128,16 +133,15 @@ class ProjectControllerTest {
             "/testData/clean.sql",
             "/testData/insert_roles.sql",
             "/testData/insert_users.sql",
-            "/testData/projects.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/testData/insert_project_statuses.sql",
+            "/testData/projects.sql"
+    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Delete a project successfully")
     void deleteProject() throws Exception {
         Long projectId = 1L;
         mockMvc.perform(delete("/api/projects/{id}", projectId))
                 .andExpect(status().isNoContent());
     }
-
-
 
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
