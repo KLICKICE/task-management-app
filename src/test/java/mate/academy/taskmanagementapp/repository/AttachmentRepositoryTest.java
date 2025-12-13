@@ -15,8 +15,11 @@ import mate.academy.taskmanagementapp.model.project.*;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.task.*;
 import mate.academy.taskmanagementapp.model.user.*;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class AttachmentRepositoryTest {

@@ -17,10 +17,13 @@ import mate.academy.taskmanagementapp.model.project.Project;
 import mate.academy.taskmanagementapp.model.project.ProjectStatus;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.user.User;
+import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ProjectRepositoryTest {

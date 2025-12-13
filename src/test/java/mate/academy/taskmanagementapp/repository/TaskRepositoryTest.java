@@ -18,11 +18,13 @@ import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.task.TaskPriority;
 import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import mate.academy.taskmanagementapp.model.user.User;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TaskRepositoryTest {
