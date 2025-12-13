@@ -1,24 +1,48 @@
-databaseChangeLog:
-  - changeSet:
-      id: create-project-statuses-table
-      author: oleksandr
-      changes:
-        - createTable:
-            tableName: project-statuses
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: status_project
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-        - addUniqueConstraint:
-            columnNames: status_project
-            tableName: project-statuses
-            constraintName: uq_project_statuses_status_project
+- changeSet:
+    id: create-and-insert-project-statuses
+    author: oleksandr
+    changes:
+      - createTable:
+          tableName: project_statuses
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: status_project
+                type: VARCHAR(255)
+                constraints:
+                  nullable: false
+
+      - insert:
+          tableName: project_statuses
+          columns:
+            - column:
+                name: id
+                valueNumeric: 1
+            - column:
+                name: status_project
+                value: NEW
+
+      - insert:
+          tableName: project_statuses
+          columns:
+            - column:
+                name: id
+                valueNumeric: 2
+            - column:
+                name: status_project
+                value: IN_PROGRESS
+
+      - insert:
+          tableName: project_statuses
+          columns:
+            - column:
+                name: id
+                valueNumeric: 3
+            - column:
+                name: status_project
+                value: COMPLETED

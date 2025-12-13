@@ -3,6 +3,9 @@ package mate.academy.taskmanagementapp.service.task;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import mate.academy.taskmanagementapp.model.project.Project;
+import mate.academy.taskmanagementapp.repository.ProjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,7 @@ import mate.academy.taskmanagementapp.model.user.User;
 import mate.academy.taskmanagementapp.repository.TaskRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,6 +43,9 @@ class TaskServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
+    private ProjectRepository projectRepository;
+
+    @Mock
     private AuthServiceHelper authServiceHelper;
 
     @InjectMocks
@@ -50,6 +57,7 @@ class TaskServiceImplTest {
     private CreateTaskRequestDto createTaskRequestDto;
     private TaskDto taskDto;
     private TaskUpdatedDto taskUpdatedDto;
+    private Project project;
 
     @BeforeEach
     void setUp() {
@@ -62,11 +70,16 @@ class TaskServiceImplTest {
         user.setPassword("encodedPassword");
         user.setRoles(Set.of(role));
 
+        project = new Project(); // ✅ додали
+        project.setId(1L);
+        project.setOwner(user);
+
         task = new Task();
         task.setId(1L);
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setAssignedUser(user);
+        task.setProject(project); // ✅ важливо для projectId
 
         createTaskRequestDto = new CreateTaskRequestDto();
         createTaskRequestDto.setTitle("Implement authentication");
@@ -102,18 +115,25 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Get all tasks, success")
-    void getAllTasks_success() {
-        when(taskRepository.findAll()).thenReturn(List.of(task));
+    @DisplayName("Get all tasks by projectId, success")
+    void getTasksByProjectId_success() {
+        Long projectId = 1L;
+
+        when(authServiceHelper.getCurrentUser()).thenReturn(user);
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        when(taskRepository.findAllByProjectId(projectId)).thenReturn(List.of(task));
         when(taskMapper.toDto(task)).thenReturn(taskDto);
 
-        List<TaskDto> actual = taskService.getAllTasks();
+        List<TaskDto> actual = taskService.getTasksByProjectId(projectId);
 
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertEquals("Implement authentication", actual.get(0).getTitle());
 
-        verify(taskRepository).findAll();
+        verify(authServiceHelper).getCurrentUser();
+        verify(projectRepository).findById(projectId);
+        verify(taskRepository).findAllByProjectId(projectId);
         verify(taskMapper).toDto(task);
     }
 

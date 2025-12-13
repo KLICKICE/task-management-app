@@ -69,7 +69,7 @@ public class Task {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime deadline;
 
     @PrePersist

@@ -8,6 +8,7 @@ import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.service.task.TaskService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,32 +30,36 @@ public class TaskController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public TaskDto createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
         return taskService.createTask(createTaskRequestDto);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping
-    public List<TaskDto> getAllTasks() {
-        return taskService.getAllTasks();
-    }
-
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public TaskDto getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public TaskDto updateTask(@PathVariable Long id, @RequestBody TaskUpdatedDto taskUpdatedDto) {
         return taskService.updateTask(id, taskUpdatedDto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
+    }
+
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @GetMapping
+    public List<TaskDto> getTasks(@RequestParam Long projectId) {
+        return taskService.getTasksByProjectId(projectId);
     }
 }
 

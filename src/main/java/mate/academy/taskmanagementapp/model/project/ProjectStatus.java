@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "project-statuses")
+@Table(name = "project_statuses")
 public class ProjectStatus {
 
     @Id

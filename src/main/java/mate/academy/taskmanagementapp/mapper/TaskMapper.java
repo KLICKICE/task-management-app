@@ -5,14 +5,47 @@ import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.model.task.Task;
+import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 @Mapper(config = MapConfig.class)
 public interface TaskMapper {
-    Task toEntity(CreateTaskRequestDto createTaskRequestDto);
 
+    @BeanMapping(ignoreUnmappedSourceProperties = {"projectId"})
+    @Mapping(target = "assignedUser", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "priority", ignore = true)
+    @Mapping(target = "project", ignore = true)
+    @Mapping(target = "labels", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    Task toEntity(CreateTaskRequestDto dto);
+
+    @Mapping(target = "assignedUserEmail", source = "assignedUser.email")
+    @Mapping(target = "taskStatus", source = "status.statusTask")
+    @Mapping(target = "taskPriority", source = "priority.priorityStatus",
+            qualifiedByName = "priorityToTitleCase")
     TaskDto toDto(Task task);
 
+    @Mapping(target = "assignedUser", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "priority", ignore = true)
+    @Mapping(target = "project", ignore = true)
+    @Mapping(target = "labels", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     void updateTaskFromDto(TaskUpdatedDto dto, @MappingTarget Task task);
+
+    @Named("priorityToTitleCase")
+    default String priorityToTitleCase(TaskPriority.PriorityStatus p) {
+        if (p == null) {
+            return null;
+        }
+        String s = p.name().toLowerCase();
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
 }

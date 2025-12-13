@@ -17,5 +17,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByPriority_PriorityStatus(TaskPriority.PriorityStatus priority);
 
     List<Task> findAllByDeadlineBefore(LocalDateTime deadline);
+
+    List<Task> findAllByProjectId(Long projectId);
 }
 

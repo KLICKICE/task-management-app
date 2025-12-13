@@ -9,11 +9,11 @@ import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 public interface TaskService {
     TaskDto createTask(CreateTaskRequestDto createTaskRequestDto);
 
-    List<TaskDto> getAllTasks();
-
     TaskDto getTaskById(Long id);
 
     TaskDto updateTask(Long id, TaskUpdatedDto taskUpdatedDto);
+
+    List<TaskDto> getTasksByProjectId(Long projectId);
 
     void deleteTask(Long id);
 }
