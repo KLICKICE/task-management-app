@@ -1,6 +1,8 @@
 package mate.academy.taskmanagementapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+
 import mate.academy.taskmanagementapp.dto.project.CreateProjectRequestDto;
 import mate.academy.taskmanagementapp.dto.project.ProjectDto;
 import mate.academy.taskmanagementapp.dto.project.ProjectUpdateDto;
@@ -15,8 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,12 +39,15 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_project_statuses.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Create a new project successfully")
     void createProject_success() throws Exception {
         Long id = 1L;
@@ -69,13 +72,16 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_project_statuses.sql",
-            "/testData/projects.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Get a project successfully")
     void getProjectById() throws Exception {
         Long projectId = 1L;
@@ -85,13 +91,16 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_project_statuses.sql",
-            "/testData/projects.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Get all projects from user successfully")
     void getUserProjects() throws Exception {
         mockMvc.perform(get("/api/projects/my-projects"))
@@ -100,13 +109,16 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_project_statuses.sql",
-            "/testData/projects.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Update a project successfully")
     void updateProject() throws Exception {
         Long projectId = 1L;
@@ -129,13 +141,16 @@ class ProjectControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_project_statuses.sql",
-            "/testData/projects.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Delete a project successfully")
     void deleteProject() throws Exception {
         Long projectId = 1L;

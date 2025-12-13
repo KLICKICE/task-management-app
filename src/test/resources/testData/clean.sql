@@ -1,15 +1,19 @@
-DELETE FROM attachments;
-DELETE FROM comments;
-DELETE FROM task_labels;
-DELETE FROM tasks;
+SET FOREIGN_KEY_CHECKS = 0;
 
-DELETE FROM labels;
-DELETE FROM task_priorities;
-DELETE FROM task_statuses;
+TRUNCATE TABLE attachments;
+TRUNCATE TABLE comments;
+TRUNCATE TABLE task_labels;
+TRUNCATE TABLE tasks;
 
-DELETE FROM projects;
-DELETE FROM project_statuses;
+TRUNCATE TABLE labels;
+TRUNCATE TABLE task_priorities;
+TRUNCATE TABLE task_statuses;
 
-DELETE FROM users_roles;
-DELETE FROM users;
-DELETE FROM roles;
+TRUNCATE TABLE projects;
+TRUNCATE TABLE project_statuses;
+
+TRUNCATE TABLE users_roles;
+TRUNCATE TABLE users;
+TRUNCATE TABLE roles;
+
+SET FOREIGN_KEY_CHECKS = 1;
