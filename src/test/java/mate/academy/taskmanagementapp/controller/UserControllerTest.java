@@ -1,6 +1,7 @@
 package mate.academy.taskmanagementapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
 import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
 import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -65,13 +68,13 @@ class UserControllerTest {
 
     @Test
     @Sql(
-            scripts = {"/testData/insert_roles.sql", "/testData/insert_users.sql"},
+            scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @DisplayName("Login existing user successfully from SQL seed data")
     void loginUser_ExistingUserFromSql_success() throws Exception {
         UserLoginDto loginDto = new UserLoginDto();
-        loginDto.setUsername("user");
+        loginDto.setUsername("user@example.com");
         loginDto.setPassword("password123");
 
         MvcResult result = mockMvc.perform(
@@ -85,12 +88,12 @@ class UserControllerTest {
         UserResponseDto actual = fromJson(result, UserResponseDto.class);
 
         assertNotNull(actual);
-        assertEquals("user", actual.getUsername());
+        assertEquals("user@example.com", actual.getUsername());
         assertEquals("user@example.com", actual.getEmail());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -102,7 +105,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -123,7 +126,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "user@example.com", roles = {"ADMIN"})
     @Sql(
             scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD

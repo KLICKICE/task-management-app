@@ -1,6 +1,9 @@
 package mate.academy.taskmanagementapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
+
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
@@ -11,18 +14,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -36,20 +43,26 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Create a new task successfully")
     void createTask_success() throws Exception {
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setTitle("Test Task");
-        createTaskRequestDto.setAssignedUserId(1L);
+        CreateTaskRequestDto dto = new CreateTaskRequestDto();
+        dto.setTitle("Test Task");
+        dto.setAssignedUserId(1L);
+        dto.setProjectId(1L);
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/api/tasks")
-                                .content(toJson(createTaskRequestDto))
+                                .content(toJson(dto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
@@ -64,25 +77,30 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_task.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Update task successfully")
     void updateTask_success() throws Exception {
         Long id = 1L;
 
-        TaskUpdatedDto taskUpdatedDto = new TaskUpdatedDto();
-        taskUpdatedDto.setTaskPriority("HIGH");
-        taskUpdatedDto.setTitle("Test Task");
-        taskUpdatedDto.setTaskStatus("DONE");
-        taskUpdatedDto.setAssignedUserEmail("user@example.com");
+        TaskUpdatedDto dto = new TaskUpdatedDto();
+        dto.setTaskPriority("HIGH");
+        dto.setTitle("Test Task");
+        dto.setTaskStatus("DONE");
+        dto.setAssignedUserEmail("user@example.com");
 
         MvcResult mvcResult = mockMvc.perform(put("/api/tasks/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(taskUpdatedDto)))
+                        .content(toJson(dto)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -94,12 +112,17 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/insert_task.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Delete task successfully")
     void deleteTask_success() throws Exception {
         Long id = 1L;
@@ -109,13 +132,17 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser(username = "user@example.com", roles = {"USER"})
-    @Sql(scripts = {
-            "/testData/clean.sql",
-            "/testData/insert_roles.sql",
-            "/testData/insert_users.sql",
-            "/testData/projects.sql",
-            "/testData/insert_task.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @DisplayName("Get tasks by projectId successfully")
     void getTasksByProjectId_success() throws Exception {
         Long projectId = 1L;
@@ -137,7 +164,6 @@ class TaskControllerTest {
 
         assertNotNull(tasks);
         assertFalse(tasks.isEmpty(), "Expected tasks list not to be empty");
-
         assertNotNull(tasks.get(0).getTitle());
     }
 
