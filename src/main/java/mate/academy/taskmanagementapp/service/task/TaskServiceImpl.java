@@ -11,18 +11,24 @@ import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.exception.AccessDeniedException;
 import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
 import mate.academy.taskmanagementapp.mapper.TaskMapper;
+import mate.academy.taskmanagementapp.model.attachment.Attachment;
+import mate.academy.taskmanagementapp.model.label.Label;
 import mate.academy.taskmanagementapp.model.project.Project;
 import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.task.TaskPriority;
 import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import mate.academy.taskmanagementapp.model.user.User;
+import mate.academy.taskmanagementapp.repository.AttachmentRepository;
+import mate.academy.taskmanagementapp.repository.LabelRepository;
 import mate.academy.taskmanagementapp.repository.ProjectRepository;
 import mate.academy.taskmanagementapp.repository.TaskPriorityRepository;
 import mate.academy.taskmanagementapp.repository.TaskRepository;
 import mate.academy.taskmanagementapp.repository.TaskStatusRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
+import mate.academy.taskmanagementapp.service.dropbox.DropboxService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -35,8 +41,12 @@ public class TaskServiceImpl implements TaskService {
     private final TaskPriorityRepository taskPriorityRepository;
     private final TaskStatusRepository taskStatusRepository;
     private final ProjectRepository projectRepository;
+    private final DropboxService dropboxService;
+    private final AttachmentRepository attachmentRepository;
+    private final LabelRepository labelRepository;
 
     @Override
+    @Transactional
     public TaskDto createTask(CreateTaskRequestDto dto) {
         User currentUser = authServiceHelper.getCurrentUser();
 
@@ -58,7 +68,6 @@ public class TaskServiceImpl implements TaskService {
                         + dto.getAssignedUserId()));
 
         Task task = taskMapper.toEntity(dto);
-
         task.setProject(project);
         task.setAssignedUser(assignee);
 
@@ -77,6 +86,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskDto updateTask(Long id, TaskUpdatedDto dto) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found: " + id));
@@ -105,19 +115,38 @@ public class TaskServiceImpl implements TaskService {
         if (dto.getTaskPriority() != null) {
             task.setPriority(resolvePriority(dto.getTaskPriority()));
         }
+
         return taskMapper.toDto(taskRepository.save(task));
     }
 
     @Override
+    @Transactional
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: "
-                        + id));
+                .orElseThrow(() -> new EntityNotFoundException("Task not found: " + id));
 
         User currentUser = authServiceHelper.getCurrentUser();
         validateUserPermission(task, currentUser);
 
+        List<Attachment> attachments = attachmentRepository.findAllByTaskId(task.getId());
+
+        for (Attachment attachment : attachments) {
+            String dropboxFileId = attachment.getDropboxFileId();
+            if (dropboxFileId == null || dropboxFileId.isBlank()) {
+                continue;
+            }
+            try {
+                dropboxService.deleteFile(dropboxFileId);
+            } catch (Exception e) {
+                log.warn("Failed to delete Dropbox file: {}", dropboxFileId, e);
+            }
+        }
+
+        attachmentRepository.deleteAll(attachments);
+
         taskRepository.delete(task);
+
+        log.info("Task {} deleted by user {}", id, currentUser.getEmail());
     }
 
     @Override
@@ -129,6 +158,8 @@ public class TaskServiceImpl implements TaskService {
                         + projectId));
 
         if (!authServiceHelper.isAdmin(currentUser)
+                && project.getOwner() != null
+                && project.getOwner().getId() != null
                 && !project.getOwner().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You don't have access to this project");
         }
@@ -136,6 +167,34 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAllByProjectId(projectId).stream()
                 .map(taskMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public TaskDto addLabelToTask(Long taskId, Long labelId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found: " + taskId));
+        Label label = labelRepository.findById(labelId)
+                .orElseThrow(() -> new EntityNotFoundException("Label not found: " + labelId));
+
+        authServiceHelper.assertCanAccessTask(task);
+
+        task.getLabels().add(label);
+        return taskMapper.toDto(taskRepository.save(task));
+    }
+
+    @Override
+    @Transactional
+    public TaskDto removeLabelFromTask(Long taskId, Long labelId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found: " + taskId));
+        Label label = labelRepository.findById(labelId)
+                .orElseThrow(() -> new EntityNotFoundException("Label not found: " + labelId));
+
+        authServiceHelper.assertCanAccessTask(task);
+
+        task.getLabels().remove(label);
+        return taskMapper.toDto(taskRepository.save(task));
     }
 
     private void validateUserPermission(Task task, User currentUser) {

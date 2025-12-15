@@ -3,6 +3,7 @@ package mate.academy.taskmanagementapp.controller;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
@@ -31,7 +32,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskDto createTask(@RequestBody CreateTaskRequestDto createTaskRequestDto) {
+    public TaskDto createTask(@RequestBody @Valid CreateTaskRequestDto createTaskRequestDto) {
         return taskService.createTask(createTaskRequestDto);
     }
 
@@ -45,7 +46,8 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskDto updateTask(@PathVariable Long id, @RequestBody TaskUpdatedDto taskUpdatedDto) {
+    public TaskDto updateTask(@PathVariable Long id,
+                              @RequestBody @Valid TaskUpdatedDto taskUpdatedDto) {
         return taskService.updateTask(id, taskUpdatedDto);
     }
 
@@ -58,8 +60,22 @@ public class TaskController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<TaskDto> getTasks(@RequestParam Long projectId) {
         return taskService.getTasksByProjectId(projectId);
     }
-}
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PostMapping("/{taskId}/labels/{labelId}")
+    @ResponseStatus(HttpStatus.OK)
+    public TaskDto addLabelToTask(@PathVariable Long taskId, @PathVariable Long labelId) {
+        return taskService.addLabelToTask(taskId, labelId);
+    }
+
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @DeleteMapping("/{taskId}/labels/{labelId}")
+    @ResponseStatus(HttpStatus.OK)
+    public TaskDto removeLabelFromTask(@PathVariable Long taskId, @PathVariable Long labelId) {
+        return taskService.removeLabelFromTask(taskId, labelId);
+    }
+}

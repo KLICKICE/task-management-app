@@ -41,7 +41,7 @@ class AttachmentServiceImplTest {
     private TaskRepository taskRepository;
 
     @Mock
-    private AuthServiceHelper authServiceHelper; // ✅ ДОДАЛИ
+    private AuthServiceHelper authServiceHelper;
 
     @InjectMocks
     private AttachmentServiceImpl attachmentService;
@@ -101,6 +101,7 @@ class AttachmentServiceImplTest {
         verify(dropboxService).uploadFile(multipartFile);
         verify(attachmentRepository).save(any(Attachment.class));
         verify(attachmentMapper).toDto(attachment);
+        verifyNoMoreInteractions(taskRepository, dropboxService, attachmentRepository, attachmentMapper, authServiceHelper);
     }
 
     @Test
@@ -124,7 +125,68 @@ class AttachmentServiceImplTest {
         verify(authServiceHelper).assertCanAccessTask(task);
         verify(attachmentRepository).findAllByTaskId(taskId);
         verify(attachmentMapper).toDto(attachment);
+        verifyNoMoreInteractions(taskRepository, attachmentRepository, attachmentMapper, authServiceHelper);
+        verifyNoInteractions(dropboxService);
+    }
 
-        verifyNoMoreInteractions(attachmentRepository, attachmentMapper);
+    @Test
+    @DisplayName("Get attachment by id, success")
+    void getAttachmentById_success() {
+        Long attachmentId = 1L;
+
+        when(attachmentRepository.findById(attachmentId)).thenReturn(Optional.of(attachment));
+        doNothing().when(authServiceHelper).assertCanAccessTask(task);
+        when(attachmentMapper.toDto(attachment)).thenReturn(attachmentDto);
+
+        AttachmentDto result = attachmentService.getAttachmentById(attachmentId);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("test.txt", result.getFileName());
+
+        verify(attachmentRepository).findById(attachmentId);
+        verify(authServiceHelper).assertCanAccessTask(task);
+        verify(attachmentMapper).toDto(attachment);
+        verifyNoMoreInteractions(attachmentRepository, attachmentMapper, authServiceHelper);
+        verifyNoInteractions(taskRepository, dropboxService);
+    }
+
+    @Test
+    @DisplayName("Download attachment, success")
+    void downloadAttachment_success() {
+        Long attachmentId = 1L;
+
+        when(attachmentRepository.findById(attachmentId)).thenReturn(Optional.of(attachment));
+        doNothing().when(authServiceHelper).assertCanAccessTask(task);
+        when(dropboxService.downloadFile("dropbox123")).thenReturn(new byte[] {1, 2, 3});
+
+        byte[] result = attachmentService.downloadAttachment(attachmentId);
+
+        assertNotNull(result);
+        assertEquals(3, result.length);
+
+        verify(attachmentRepository).findById(attachmentId);
+        verify(authServiceHelper).assertCanAccessTask(task);
+        verify(dropboxService).downloadFile("dropbox123");
+        verifyNoMoreInteractions(attachmentRepository, authServiceHelper, dropboxService);
+        verifyNoInteractions(taskRepository, attachmentMapper);
+    }
+
+    @Test
+    @DisplayName("Delete attachment, success")
+    void deleteAttachment_success() {
+        Long attachmentId = 1L;
+
+        when(attachmentRepository.findById(attachmentId)).thenReturn(Optional.of(attachment));
+        doNothing().when(authServiceHelper).assertCanAccessTask(task);
+
+        attachmentService.deleteAttachment(attachmentId);
+
+        verify(attachmentRepository).findById(attachmentId);
+        verify(authServiceHelper).assertCanAccessTask(task);
+        verify(dropboxService).deleteFile("dropbox123");
+        verify(attachmentRepository).delete(attachment);
+        verifyNoMoreInteractions(attachmentRepository, authServiceHelper, dropboxService);
+        verifyNoInteractions(taskRepository, attachmentMapper);
     }
 }

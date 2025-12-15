@@ -11,11 +11,16 @@ public interface TaskService {
 
     TaskDto getTaskById(Long id);
 
+    TaskDto addLabelToTask(Long taskId, Long labelId);
+
+    TaskDto removeLabelFromTask(Long taskId, Long labelId);
+
     TaskDto updateTask(Long id, TaskUpdatedDto taskUpdatedDto);
 
     List<TaskDto> getTasksByProjectId(Long projectId);
 
     void deleteTask(Long id);
+
 }
 
 

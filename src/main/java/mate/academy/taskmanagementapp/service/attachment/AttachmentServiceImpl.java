@@ -17,6 +17,7 @@ import mate.academy.taskmanagementapp.repository.TaskRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
 import mate.academy.taskmanagementapp.service.dropbox.DropboxService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -30,6 +31,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final AuthServiceHelper authServiceHelper;
 
     @Override
+    @Transactional
     public AttachmentDto addAttachment(CreateAttachmentRequestDto dto) {
         MultipartFile file = dto.getFile();
         if (file == null || file.isEmpty()) {
@@ -62,7 +64,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 dropboxService.deleteFile(dropboxFileId);
             } catch (Exception ex) {
                 log.warn("Failed to rollback Dropbox file after DB error. dropboxFileId={}",
-                        dropboxFileId);
+                        dropboxFileId, ex);
             }
             throw e;
         }
@@ -79,5 +81,45 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .stream()
                 .map(attachmentMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public AttachmentDto getAttachmentById(Long id) {
+        Attachment attachment = attachmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Attachment not found"));
+
+        authServiceHelper.assertCanAccessTask(attachment.getTask());
+
+        return attachmentMapper.toDto(attachment);
+    }
+
+    @Override
+    public byte[] downloadAttachment(Long attachmentId) {
+        Attachment attachment = attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Attachment not found"));
+
+        authServiceHelper.assertCanAccessTask(attachment.getTask());
+
+        return dropboxService.downloadFile(attachment.getDropboxFileId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttachment(Long id) {
+        Attachment attachment = attachmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Attachment not found"));
+
+        authServiceHelper.assertCanAccessTask(attachment.getTask());
+
+        String dropboxFileId = attachment.getDropboxFileId();
+        if (dropboxFileId != null && !dropboxFileId.isBlank()) {
+            try {
+                dropboxService.deleteFile(dropboxFileId);
+            } catch (Exception e) {
+                log.warn("Dropbox file delete failed for id={}", dropboxFileId, e);
+            }
+        }
+
+        attachmentRepository.delete(attachment);
     }
 }
