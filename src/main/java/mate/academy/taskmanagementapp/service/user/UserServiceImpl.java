@@ -3,6 +3,7 @@ package mate.academy.taskmanagementapp.service.user;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import mate.academy.taskmanagementapp.dto.user.ChangePasswordRequestDto;
 import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
 import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
 import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
@@ -72,6 +73,23 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUserFromDto(userUpdateDto, user);
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
+    }
+
+    @Override
+    public UserResponseDto changePassword(Long id, ChangePasswordRequestDto dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + id));
+
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new AuthenticationException("Current password is incorrect");
+        }
+
+        if (!dto.getNewPassword().equals(dto.getRepeatNewPassword())) {
+            throw new AuthenticationException("New password and повтор не співпадають");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override

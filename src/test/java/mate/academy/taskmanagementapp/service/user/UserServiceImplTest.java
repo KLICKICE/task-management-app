@@ -79,7 +79,6 @@ class UserServiceImplTest {
 
         updateDto = new UserUpdateDto();
         updateDto.setUsername("FoundWithLight");
-        updateDto.setPassword("truePassword");
     }
 
     @Test
