@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
+import mate.academy.taskmanagementapp.dto.user.UserLoginResponseDto;
 import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
 import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
 import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
@@ -11,6 +12,7 @@ import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.user.User;
 import mate.academy.taskmanagementapp.repository.UserRepository;
+import mate.academy.taskmanagementapp.security.AuthenticationService;
 import mate.academy.taskmanagementapp.service.user.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/auth/register")
     public UserResponseDto register(@Valid @RequestBody UserRegistrationDto dto) {
@@ -38,8 +41,8 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public UserResponseDto login(@Valid @RequestBody UserLoginDto dto) {
-        return userService.login(dto);
+    public UserLoginResponseDto login(@Valid @RequestBody UserLoginDto dto) {
+        return authenticationService.authenticate(dto);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

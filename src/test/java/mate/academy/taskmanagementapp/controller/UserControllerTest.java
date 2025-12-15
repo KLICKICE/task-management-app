@@ -2,10 +2,7 @@ package mate.academy.taskmanagementapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
-import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
-import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
-import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
+import mate.academy.taskmanagementapp.dto.user.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,11 +82,10 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        UserResponseDto actual = fromJson(result, UserResponseDto.class);
+        UserLoginResponseDto actual = fromJson(result, UserLoginResponseDto.class);
 
         assertNotNull(actual);
-        assertEquals("user@example.com", actual.getUsername());
-        assertEquals("user@example.com", actual.getEmail());
+        assertNotNull(actual.token());
     }
 
     @Test
