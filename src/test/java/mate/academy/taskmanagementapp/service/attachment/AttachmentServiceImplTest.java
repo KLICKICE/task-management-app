@@ -2,6 +2,8 @@ package mate.academy.taskmanagementapp.service.attachment;
 
 import java.util.List;
 import java.util.Optional;
+
+import mate.academy.taskmanagementapp.service.AuthServiceHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
+
 import mate.academy.taskmanagementapp.dto.attachment.AttachmentDto;
 import mate.academy.taskmanagementapp.dto.attachment.CreateAttachmentRequestDto;
 import mate.academy.taskmanagementapp.mapper.AttachmentMapper;
@@ -19,13 +22,8 @@ import mate.academy.taskmanagementapp.repository.AttachmentRepository;
 import mate.academy.taskmanagementapp.repository.TaskRepository;
 import mate.academy.taskmanagementapp.service.dropbox.DropboxService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AttachmentServiceImplTest {
@@ -41,6 +39,9 @@ class AttachmentServiceImplTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private AuthServiceHelper authServiceHelper; // ✅ ДОДАЛИ
 
     @InjectMocks
     private AttachmentServiceImpl attachmentService;
@@ -81,8 +82,11 @@ class AttachmentServiceImplTest {
 
         when(multipartFile.getOriginalFilename()).thenReturn("test.txt");
         when(multipartFile.isEmpty()).thenReturn(false);
-        when(dropboxService.uploadFile(multipartFile)).thenReturn("dropbox123");
+
         when(taskRepository.findById(id)).thenReturn(Optional.of(task));
+        doNothing().when(authServiceHelper).assertCanAccessTask(task);
+
+        when(dropboxService.uploadFile(multipartFile)).thenReturn("dropbox123");
         when(attachmentRepository.save(any(Attachment.class))).thenReturn(attachment);
         when(attachmentMapper.toDto(attachment)).thenReturn(attachmentDto);
 
@@ -92,8 +96,9 @@ class AttachmentServiceImplTest {
         assertEquals("test.txt", actual.getFileName());
         assertEquals(1L, actual.getId());
 
-        verify(dropboxService).uploadFile(multipartFile);
         verify(taskRepository).findById(id);
+        verify(authServiceHelper).assertCanAccessTask(task);
+        verify(dropboxService).uploadFile(multipartFile);
         verify(attachmentRepository).save(any(Attachment.class));
         verify(attachmentMapper).toDto(attachment);
     }
@@ -102,6 +107,9 @@ class AttachmentServiceImplTest {
     @DisplayName("Find all attachments by Task Id, success")
     void findAllAttachments_ByTaskId_success() {
         Long taskId = 1L;
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        doNothing().when(authServiceHelper).assertCanAccessTask(task);
 
         when(attachmentRepository.findAllByTaskId(taskId)).thenReturn(List.of(attachment));
         when(attachmentMapper.toDto(attachment)).thenReturn(attachmentDto);
@@ -112,8 +120,11 @@ class AttachmentServiceImplTest {
         assertEquals(1, result.size());
         assertEquals("test.txt", result.get(0).getFileName());
 
+        verify(taskRepository).findById(taskId);
+        verify(authServiceHelper).assertCanAccessTask(task);
         verify(attachmentRepository).findAllByTaskId(taskId);
         verify(attachmentMapper).toDto(attachment);
+
         verifyNoMoreInteractions(attachmentRepository, attachmentMapper);
     }
 }
