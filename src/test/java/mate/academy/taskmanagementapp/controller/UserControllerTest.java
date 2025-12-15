@@ -18,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -117,6 +115,27 @@ class UserControllerTest {
                         put("/api/users/me")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(toJson(updateDto))
+                )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(
+            scripts = {"/testData/clean.sql", "/testData/insert_roles.sql", "/testData/insert_users.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("Change password successfully")
+    void changePassword_success() throws Exception {
+        ChangePasswordRequestDto dto = new ChangePasswordRequestDto();
+        dto.setCurrentPassword("password123");
+        dto.setNewPassword("newPassword123");
+        dto.setRepeatNewPassword("newPassword123");
+
+        mockMvc.perform(
+                        patch("/api/users/me/password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(toJson(dto))
                 )
                 .andExpect(status().isOk());
     }
