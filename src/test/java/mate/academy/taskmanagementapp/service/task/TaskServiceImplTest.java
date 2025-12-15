@@ -1,5 +1,6 @@
 package mate.academy.taskmanagementapp.service.task;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,9 +25,7 @@ import mate.academy.taskmanagementapp.repository.TaskRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,24 +93,55 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Create Task, success")
+    @DisplayName("Create task - success")
     void createTask_Success() {
-        Long id = 1L;
+        CreateTaskRequestDto dto = new CreateTaskRequestDto();
+        dto.setProjectId(1L);
+        dto.setAssignedUserId(2L);
+        dto.setTitle("Test task");
 
-        when(taskMapper.toEntity(createTaskRequestDto)).thenReturn(task);
-        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
-        when(taskRepository.save(task)).thenReturn(task);
-        when(taskMapper.toDto(task)).thenReturn(taskDto);
+        User currentUser = new User();
+        currentUser.setId(10L);
 
-        TaskDto actual = taskService.createTask(createTaskRequestDto);
+        Project project = new Project();
+        project.setId(1L);
+        project.setOwner(currentUser);
+
+        User assignee = new User();
+        assignee.setId(2L);
+
+        Task taskEntity = new Task();
+        Task savedTask = new Task();
+        savedTask.setId(100L);
+
+        TaskDto expectedDto = new TaskDto();
+        expectedDto.setId(100L);
+
+        when(authServiceHelper.getCurrentUser()).thenReturn(currentUser);
+        when(authServiceHelper.isAdmin(currentUser)).thenReturn(false);
+
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(assignee));
+
+        when(taskMapper.toEntity(dto)).thenReturn(taskEntity);
+        when(taskRepository.save(taskEntity)).thenReturn(savedTask);
+        when(taskMapper.toDto(savedTask)).thenReturn(expectedDto);
+
+        TaskDto actual = taskService.createTask(dto);
 
         assertNotNull(actual);
-        assertEquals("Implement authentication", actual.getTitle());
+        assertEquals(100L, actual.getId());
 
-        verify(taskMapper).toEntity(createTaskRequestDto);
-        verify(userRepository).findById(id);
-        verify(taskRepository).save(task);
-        verify(taskMapper).toDto(task);
+        assertSame(project, taskEntity.getProject());
+        assertSame(assignee, taskEntity.getAssignedUser());
+
+        assertNotNull(taskEntity.getDeadline());
+        assertTrue(taskEntity.getDeadline().isAfter(LocalDateTime.now().minusSeconds(2)));
+
+        verify(projectRepository).findById(1L);
+        verify(userRepository).findById(2L);
+        verify(taskRepository).save(taskEntity);
+        verify(taskMapper).toDto(savedTask);
     }
 
     @Test

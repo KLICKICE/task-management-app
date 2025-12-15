@@ -38,6 +38,9 @@ public interface TaskMapper {
     @Mapping(target = "labels", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "title", source = "title")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "deadline", source = "deadline")
     void updateTaskFromDto(TaskUpdatedDto dto, @MappingTarget Task task);
 
     @Named("priorityToTitleCase")
