@@ -1,9 +1,14 @@
 package mate.academy.taskmanagementapp.mapper;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import mate.academy.taskmanagementapp.config.MapConfig;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
+import mate.academy.taskmanagementapp.model.label.Label;
 import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.task.TaskPriority;
 import org.mapstruct.BeanMapping;
@@ -29,6 +34,7 @@ public interface TaskMapper {
     @Mapping(target = "taskStatus", source = "status.statusTask")
     @Mapping(target = "taskPriority", source = "priority.priorityStatus",
             qualifiedByName = "priorityToTitleCase")
+    @Mapping(target = "labelIds", source = "labels", qualifiedByName = "labelsToIds")
     TaskDto toDto(Task task);
 
     @Mapping(target = "assignedUser", ignore = true)
@@ -50,5 +56,15 @@ public interface TaskMapper {
         }
         String s = p.name().toLowerCase();
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
+    @Named("labelsToIds")
+    default Set<Long> labelsToIds(Set<Label> labels) {
+        if (labels == null || labels.isEmpty()) {
+            return Collections.emptySet();
+        }
+        return labels.stream()
+                .map(Label::getId)
+                .collect(Collectors.toSet());
     }
 }

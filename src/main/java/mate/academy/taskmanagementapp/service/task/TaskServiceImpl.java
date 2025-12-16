@@ -5,11 +5,13 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mate.academy.taskmanagementapp.dto.label.LabelDto;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.exception.AccessDeniedException;
 import mate.academy.taskmanagementapp.exception.EntityNotFoundException;
+import mate.academy.taskmanagementapp.mapper.LabelMapper;
 import mate.academy.taskmanagementapp.mapper.TaskMapper;
 import mate.academy.taskmanagementapp.model.attachment.Attachment;
 import mate.academy.taskmanagementapp.model.label.Label;
@@ -44,6 +46,7 @@ public class TaskServiceImpl implements TaskService {
     private final DropboxService dropboxService;
     private final AttachmentRepository attachmentRepository;
     private final LabelRepository labelRepository;
+    private final LabelMapper labelMapper;
 
     @Override
     @Transactional
@@ -195,6 +198,20 @@ public class TaskServiceImpl implements TaskService {
 
         task.getLabels().remove(label);
         return taskMapper.toDto(taskRepository.save(task));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LabelDto> getTaskLabels(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+        authServiceHelper.assertCanAccessTask(task);
+
+        return task.getLabels()
+                .stream()
+                .map(labelMapper::toDto)
+                .toList();
     }
 
     private void validateUserPermission(Task task, User currentUser) {

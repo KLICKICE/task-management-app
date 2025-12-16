@@ -5,6 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import mate.academy.taskmanagementapp.dto.label.LabelDto;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
@@ -77,5 +78,12 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     public TaskDto removeLabelFromTask(@PathVariable Long taskId, @PathVariable Long labelId) {
         return taskService.removeLabelFromTask(taskId, labelId);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/{id}/labels")
+    @ResponseStatus(HttpStatus.OK)
+    public List<LabelDto> getTaskLabels(@PathVariable Long id) {
+        return taskService.getTaskLabels(id);
     }
 }

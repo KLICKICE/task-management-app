@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 
+import mate.academy.taskmanagementapp.dto.label.LabelDto;
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
@@ -166,6 +167,45 @@ class TaskControllerTest {
         assertFalse(tasks.isEmpty(), "Expected tasks list not to be empty");
         assertNotNull(tasks.get(0).getTitle());
     }
+
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql",
+                    "/testData/insert_labels.sql",
+                    "/testData/insert_task_label.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("Get labels for a task successfully")
+    void getTaskLabels_success() throws Exception {
+        Long taskId = 1L;
+
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/api/tasks/{id}/labels", taskId)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        LabelDto[] labels = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                LabelDto[].class
+        );
+
+        assertNotNull(labels);
+        assertFalse(labels.length == 0, "Expected at least one label");
+        assertNotNull(labels[0].getId());
+        assertNotNull(labels[0].getName());
+        assertNotNull(labels[0].getColor());
+    }
+
 
     private String toJson(Object obj) throws Exception {
         return objectMapper.writeValueAsString(obj);
