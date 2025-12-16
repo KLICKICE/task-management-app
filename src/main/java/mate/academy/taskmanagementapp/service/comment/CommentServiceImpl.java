@@ -24,11 +24,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto addComment(CreateCommentRequestDto requestDto) {
-        Comment entity = commentMapper.toEntity(requestDto);
         Task task = taskRepository.findById(requestDto.getTaskId())
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+        authServiceHelper.assertCanAccessTask(task);
+
+        Comment entity = commentMapper.toEntity(requestDto);
         entity.setTask(task);
         entity.setUser(authServiceHelper.getCurrentUser());
+
         return commentMapper.toDto(commentRepository.save(entity));
     }
 
@@ -36,7 +40,12 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> getCommentsByTaskId(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+        authServiceHelper.assertCanAccessTask(task);
+
         return commentRepository.findAllByTask(task)
-                .stream().map(commentMapper::toDto).toList();
+                .stream()
+                .map(commentMapper::toDto)
+                .toList();
     }
 }

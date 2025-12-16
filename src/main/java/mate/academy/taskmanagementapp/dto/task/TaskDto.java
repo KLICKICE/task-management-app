@@ -1,6 +1,7 @@
 package mate.academy.taskmanagementapp.dto.task;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class TaskDto {
     private String taskStatus;
     private String taskPriority;
     private LocalDateTime deadline;
+    private Set<Long> labelIds;
 }
 

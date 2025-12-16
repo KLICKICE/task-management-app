@@ -107,6 +107,42 @@ class AttachmentControllerTest {
         assertEquals(1L, attachments[0].getTaskId());
     }
 
+    @Test
+    @WithMockUser(username = "user@example.com", roles = {"USER"})
+    @Sql(
+            scripts = {
+                    "/testData/clean.sql",
+                    "/testData/insert_roles.sql",
+                    "/testData/insert_users.sql",
+                    "/testData/insert_project_statuses.sql",
+                    "/testData/projects.sql",
+                    "/testData/insert_task.sql",
+                    "/testData/insert_attachment.sql"
+            },
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("Download attachment successfully")
+    void downloadAttachment_success() throws Exception {
+        byte[] bytes = "file-content".getBytes();
+
+        // insert_attachment.sql має містити dropboxFileId = "dbx-file-1" для attachment id=1
+        Mockito.when(dropboxService.downloadFile("dbx-file-1"))
+                .thenReturn(bytes);
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/attachments/1/download"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertEquals("application/octet-stream", mvcResult.getResponse().getContentType());
+        String cd = mvcResult.getResponse().getHeader("Content-Disposition");
+        assertNotNull(cd);
+        assertTrue(cd.contains("attachment"));
+        assertTrue(cd.contains("test.txt")); // filename з insert_attachment.sql
+
+        assertEquals(bytes.length, mvcResult.getResponse().getContentAsByteArray().length);
+        assertEquals("file-content", new String(mvcResult.getResponse().getContentAsByteArray()));
+    }
+
     private <T> T fromJson(MvcResult result, Class<T> clazz) throws Exception {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }

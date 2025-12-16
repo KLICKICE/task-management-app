@@ -1,11 +1,20 @@
 package mate.academy.taskmanagementapp.service.task;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import mate.academy.taskmanagementapp.model.attachment.Attachment;
 import mate.academy.taskmanagementapp.model.project.Project;
+import mate.academy.taskmanagementapp.repository.AttachmentRepository;
+import mate.academy.taskmanagementapp.repository.LabelRepository;
 import mate.academy.taskmanagementapp.repository.ProjectRepository;
+import mate.academy.taskmanagementapp.repository.TaskPriorityRepository;
+import mate.academy.taskmanagementapp.repository.TaskRepository;
+import mate.academy.taskmanagementapp.repository.TaskStatusRepository;
+import mate.academy.taskmanagementapp.repository.UserRepository;
+import mate.academy.taskmanagementapp.service.dropbox.DropboxService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import mate.academy.taskmanagementapp.dto.task.CreateTaskRequestDto;
 import mate.academy.taskmanagementapp.dto.task.TaskDto;
 import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
@@ -20,15 +30,10 @@ import mate.academy.taskmanagementapp.mapper.TaskMapper;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.user.User;
-import mate.academy.taskmanagementapp.repository.TaskRepository;
-import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
@@ -47,6 +52,21 @@ class TaskServiceImplTest {
 
     @Mock
     private AuthServiceHelper authServiceHelper;
+
+    @Mock
+    private DropboxService dropboxService;
+
+    @Mock
+    private AttachmentRepository attachmentRepository;
+
+    @Mock
+    private LabelRepository labelRepository;
+
+    @Mock
+    private TaskPriorityRepository taskPriorityRepository;
+
+    @Mock
+    private TaskStatusRepository taskStatusRepository;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -70,7 +90,7 @@ class TaskServiceImplTest {
         user.setPassword("encodedPassword");
         user.setRoles(Set.of(role));
 
-        project = new Project(); // ✅ додали
+        project = new Project();
         project.setId(1L);
         project.setOwner(user);
 
@@ -79,7 +99,7 @@ class TaskServiceImplTest {
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setAssignedUser(user);
-        task.setProject(project); // ✅ важливо для projectId
+        task.setProject(project);
 
         createTaskRequestDto = new CreateTaskRequestDto();
         createTaskRequestDto.setTitle("Implement authentication");
@@ -94,24 +114,55 @@ class TaskServiceImplTest {
     }
 
     @Test
-    @DisplayName("Create Task, success")
+    @DisplayName("Create task - success")
     void createTask_Success() {
-        Long id = 1L;
+        CreateTaskRequestDto dto = new CreateTaskRequestDto();
+        dto.setProjectId(1L);
+        dto.setAssignedUserId(2L);
+        dto.setTitle("Test task");
 
-        when(taskMapper.toEntity(createTaskRequestDto)).thenReturn(task);
-        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
-        when(taskRepository.save(task)).thenReturn(task);
-        when(taskMapper.toDto(task)).thenReturn(taskDto);
+        User currentUser = new User();
+        currentUser.setId(10L);
 
-        TaskDto actual = taskService.createTask(createTaskRequestDto);
+        Project project = new Project();
+        project.setId(1L);
+        project.setOwner(currentUser);
+
+        User assignee = new User();
+        assignee.setId(2L);
+
+        Task taskEntity = new Task();
+        Task savedTask = new Task();
+        savedTask.setId(100L);
+
+        TaskDto expectedDto = new TaskDto();
+        expectedDto.setId(100L);
+
+        when(authServiceHelper.getCurrentUser()).thenReturn(currentUser);
+        when(authServiceHelper.isAdmin(currentUser)).thenReturn(false);
+
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(assignee));
+
+        when(taskMapper.toEntity(dto)).thenReturn(taskEntity);
+        when(taskRepository.save(taskEntity)).thenReturn(savedTask);
+        when(taskMapper.toDto(savedTask)).thenReturn(expectedDto);
+
+        TaskDto actual = taskService.createTask(dto);
 
         assertNotNull(actual);
-        assertEquals("Implement authentication", actual.getTitle());
+        assertEquals(100L, actual.getId());
 
-        verify(taskMapper).toEntity(createTaskRequestDto);
-        verify(userRepository).findById(id);
-        verify(taskRepository).save(task);
-        verify(taskMapper).toDto(task);
+        assertSame(project, taskEntity.getProject());
+        assertSame(assignee, taskEntity.getAssignedUser());
+
+        assertNotNull(taskEntity.getDeadline());
+        assertTrue(taskEntity.getDeadline().isAfter(LocalDateTime.now().minusSeconds(2)));
+
+        verify(projectRepository).findById(1L);
+        verify(userRepository).findById(2L);
+        verify(taskRepository).save(taskEntity);
+        verify(taskMapper).toDto(savedTask);
     }
 
     @Test
@@ -121,6 +172,7 @@ class TaskServiceImplTest {
 
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(authServiceHelper.isAdmin(user)).thenReturn(false);
 
         when(taskRepository.findAllByProjectId(projectId)).thenReturn(List.of(task));
         when(taskMapper.toDto(task)).thenReturn(taskDto);
@@ -142,7 +194,7 @@ class TaskServiceImplTest {
     void getTask_ById_success() {
         Long id = 1L;
 
-        when(taskRepository.findById(id)).thenReturn(Optional.ofNullable(task));
+        when(taskRepository.findById(id)).thenReturn(Optional.of(task));
         when(taskMapper.toDto(task)).thenReturn(taskDto);
 
         TaskDto actual = taskService.getTaskById(id);
@@ -157,13 +209,26 @@ class TaskServiceImplTest {
     void deleteTask_ById_success() {
         Long id = 1L;
 
-        when(taskRepository.findById(id)).thenReturn(Optional.ofNullable(task));
+        when(taskRepository.findById(id)).thenReturn(Optional.of(task));
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
+        when(authServiceHelper.isAdmin(user)).thenReturn(true);
+
+        Attachment a1 = new Attachment();
+        a1.setId(1L);
+        a1.setDropboxFileId("dropbox123");
+
+        when(attachmentRepository.findAllByTaskId(id)).thenReturn(List.of(a1));
 
         assertDoesNotThrow(() -> taskService.deleteTask(id));
 
         verify(taskRepository).findById(id);
         verify(authServiceHelper).getCurrentUser();
+        verify(authServiceHelper).isAdmin(user);
+
+        verify(attachmentRepository).findAllByTaskId(id);
+        verify(dropboxService).deleteFile("dropbox123");
+        verify(attachmentRepository).deleteAll(List.of(a1));
+
         verify(taskRepository).delete(task);
     }
 }
