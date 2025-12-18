@@ -3,6 +3,10 @@ package mate.academy.taskmanagementapp.repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import mate.academy.taskmanagementapp.model.project.ProjectStatus;
+import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -12,11 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import mate.academy.taskmanagementapp.model.project.Project;
-import mate.academy.taskmanagementapp.model.project.ProjectStatus;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.task.Task;
-import mate.academy.taskmanagementapp.model.task.TaskPriority;
-import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import mate.academy.taskmanagementapp.model.user.User;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -52,19 +53,8 @@ class TaskRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ProjectStatusRepository projectStatusRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
-    private TaskPriorityRepository taskPriorityRepository;
-
     private User savedUser;
     private Project savedProject;
-    private TaskStatus savedStatus;
-    private TaskPriority savedPriority;
 
     @BeforeEach
     void setUp() {
@@ -81,25 +71,14 @@ class TaskRepositoryTest {
         user.setRoles(Set.of(savedRole));
         savedUser = userRepository.save(user);
 
-        ProjectStatus projectStatus = new ProjectStatus();
-        projectStatus.setStatusProject(ProjectStatus.StatusProject.INITIATED);
-        ProjectStatus savedProjectStatus = projectStatusRepository.save(projectStatus);
-
         Project project = new Project();
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedProjectStatus);
+        project.setStatus(ProjectStatus.INITIATED); // ✅ ENUM
         project.setStartDate(LocalDate.now());
+
         savedProject = projectRepository.save(project);
-
-        TaskStatus status = new TaskStatus();
-        status.setStatusTask(TaskStatus.StatusTask.NEW);
-        savedStatus = taskStatusRepository.save(status);
-
-        TaskPriority priority = new TaskPriority();
-        priority.setPriorityStatus(TaskPriority.PriorityStatus.HIGH);
-        savedPriority = taskPriorityRepository.save(priority);
     }
 
     @Test
@@ -109,8 +88,8 @@ class TaskRepositoryTest {
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setProject(savedProject);
-        task.setStatus(savedStatus);
-        task.setPriority(savedPriority);
+        task.setStatus(TaskStatus.NEW);
+        task.setPriority(TaskPriority.HIGH);
         task.setAssignedUser(savedUser);
         task.setDeadline(LocalDateTime.now().plusDays(5));
 
@@ -118,31 +97,32 @@ class TaskRepositoryTest {
 
         assertNotNull(savedTask.getId());
         assertEquals("Implement authentication", savedTask.getTitle());
-        assertEquals(TaskStatus.StatusTask.NEW, savedTask.getStatus().getStatusTask());
-        assertEquals(TaskPriority.PriorityStatus.HIGH, savedTask.getPriority().getPriorityStatus());
+        assertEquals(TaskStatus.NEW, savedTask.getStatus());
+        assertEquals(TaskPriority.HIGH, savedTask.getPriority());
         assertEquals(savedUser.getId(), savedTask.getAssignedUser().getId());
         assertEquals(savedProject.getId(), savedTask.getProject().getId());
     }
 
     @Test
-    @DisplayName("Find task by Status, success")
-    void findAllByStatus_StatusTask() {
+    @DisplayName("Find task by status successfully")
+    void findAllByStatus_success() {
         Task task = new Task();
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setProject(savedProject);
-        task.setStatus(savedStatus);
-        task.setPriority(savedPriority);
+        task.setStatus(TaskStatus.NEW);
+        task.setPriority(TaskPriority.HIGH);
         task.setAssignedUser(savedUser);
         task.setDeadline(LocalDateTime.now().plusDays(5));
 
-        Task savedTask = taskRepository.save(task);
+        taskRepository.save(task);
 
-        List<Task> tasks = taskRepository
-                .findAllByStatus_StatusTask(savedTask.getStatus().getStatusTask());
+        List<Task> tasks = taskRepository.findAllByStatus(TaskStatus.NEW);
 
         assertNotNull(tasks);
-        assertFalse(tasks.isEmpty(), "Expected tasks with status NEW");
-        assertEquals(TaskStatus.StatusTask.NEW, tasks.get(0).getStatus().getStatusTask());
+        assertFalse(tasks.isEmpty());
+        assertEquals(TaskStatus.NEW, tasks.get(0).getStatus());
     }
 }
+
+

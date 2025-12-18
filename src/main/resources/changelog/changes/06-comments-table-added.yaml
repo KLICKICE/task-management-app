@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-comments-table
+      author: oleksandr
+      changes:
+        - createTable:
+            tableName: comments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: task_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: text
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_stamp
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: comments
+            referencedColumnNames: id
+            referencedTableName: users
+            constraintName: fk_comments_user
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseColumnNames: task_id
+            baseTableName: comments
+            referencedColumnNames: id
+            referencedTableName: tasks
+            constraintName: fk_comments_task
+            onDelete: CASCADE

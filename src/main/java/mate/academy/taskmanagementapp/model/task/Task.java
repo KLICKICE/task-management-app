@@ -6,6 +6,8 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -52,12 +54,12 @@ public class Task {
     )
     private Set<Label> labels = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "priority_id")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TaskPriority priority;
 
     @ManyToOne(fetch = FetchType.LAZY)

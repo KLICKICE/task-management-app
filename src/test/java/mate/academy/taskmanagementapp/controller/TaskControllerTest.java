@@ -49,7 +49,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -60,6 +59,7 @@ class TaskControllerTest {
         dto.setTitle("Test Task");
         dto.setAssignedUserId(1L);
         dto.setProjectId(1L);
+
 
         MvcResult mvcResult = mockMvc.perform(
                         post("/tasks")
@@ -83,7 +83,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -118,7 +117,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -138,7 +136,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -175,7 +172,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_labels.sql",

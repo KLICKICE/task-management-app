@@ -46,7 +46,6 @@ class ProjectControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
@@ -79,7 +78,6 @@ class ProjectControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -98,7 +96,6 @@ class ProjectControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -116,7 +113,6 @@ class ProjectControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -148,7 +144,6 @@ class ProjectControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD

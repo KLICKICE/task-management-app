@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import mate.academy.taskmanagementapp.dto.project.CreateProjectRequestDto;
 import mate.academy.taskmanagementapp.dto.project.ProjectDto;
 import mate.academy.taskmanagementapp.dto.project.ProjectUpdateDto;
@@ -20,13 +19,10 @@ import mate.academy.taskmanagementapp.model.project.ProjectStatus;
 import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.user.User;
 import mate.academy.taskmanagementapp.repository.ProjectRepository;
-import mate.academy.taskmanagementapp.repository.ProjectStatusRepository;
 import mate.academy.taskmanagementapp.service.AuthServiceHelper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectServiceImplTest {
@@ -38,13 +34,7 @@ class ProjectServiceImplTest {
     private ProjectMapper projectMapper;
 
     @Mock
-    private ProjectStatusRepository projectStatusRepository;
-
-    @Mock
     private AuthServiceHelper authServiceHelper;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private ProjectServiceImpl projectService;
@@ -52,7 +42,6 @@ class ProjectServiceImplTest {
     private User user;
     private Role role;
     private Project project;
-    private ProjectStatus projectStatus;
     private CreateProjectRequestDto createProjectRequestDto;
     private ProjectDto projectDto;
     private ProjectUpdateDto projectUpdateDto;
@@ -65,7 +54,6 @@ class ProjectServiceImplTest {
         user = new User();
         user.setId(1L);
         user.setUsername("LostFromLight");
-        user.setPassword("encodedPassword");
         user.setRoles(Set.of(role));
 
         project = new Project();
@@ -73,10 +61,7 @@ class ProjectServiceImplTest {
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(user);
-
-        projectStatus = new ProjectStatus();
-        projectStatus.setId(1L);
-        projectStatus.setStatusProject(ProjectStatus.StatusProject.INITIATED);
+        project.setStatus(ProjectStatus.INITIATED);
 
         createProjectRequestDto = new CreateProjectRequestDto();
         createProjectRequestDto.setTitle("Shadowfall System");
@@ -92,7 +77,7 @@ class ProjectServiceImplTest {
     }
 
     @Test
-    @DisplayName("Dummy sanity test for structure")
+    @DisplayName("Context loads")
     void contextLoads() {
         assertNotNull(projectService);
         assertNotNull(projectRepository);
@@ -100,37 +85,35 @@ class ProjectServiceImplTest {
     }
 
     @Test
-    @DisplayName("Create project, success")
+    @DisplayName("Create project success")
     void createProject_success() {
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectMapper.toEntity(createProjectRequestDto)).thenReturn(project);
-        when(projectStatusRepository.findByStatusProject(ProjectStatus.StatusProject.INITIATED))
-                .thenReturn(Optional.of(projectStatus));
         when(projectRepository.save(project)).thenReturn(project);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        ProjectDto createdProject = projectService.createProject(createProjectRequestDto);
+        ProjectDto created = projectService.createProject(createProjectRequestDto);
 
-        assertNotNull(createdProject);
-        assertEquals("Shadowfall System", createdProject.getTitle());
+        assertNotNull(created);
+        assertEquals("Shadowfall System", created.getTitle());
 
         verify(authServiceHelper).getCurrentUser();
         verify(projectMapper).toEntity(createProjectRequestDto);
-        verify(projectStatusRepository).findByStatusProject(ProjectStatus.StatusProject.INITIATED);
         verify(projectRepository).save(project);
         verify(projectMapper).toDto(project);
     }
 
     @Test
-    @DisplayName("Get all users projects, success")
-    void getAllProjects_ByUser_success() {
+    @DisplayName("Get user projects success")
+    void getUserProjects_success() {
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectRepository.findAllByOwnerId(user.getId())).thenReturn(List.of(project));
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        List<ProjectDto> userProjects = projectService.getUserProjects();
+        List<ProjectDto> projects = projectService.getUserProjects();
 
-        assertNotNull(userProjects);
+        assertNotNull(projects);
+        assertEquals(1, projects.size());
 
         verify(authServiceHelper).getCurrentUser();
         verify(projectRepository).findAllByOwnerId(user.getId());
@@ -138,19 +121,18 @@ class ProjectServiceImplTest {
     }
 
     @Test
-    @DisplayName("Get project by Id, success")
-    void getProject_ById_success() {
+    @DisplayName("Get project by id success")
+    void getProjectById_success() {
         Long id = 1L;
 
         when(projectRepository.findById(id)).thenReturn(Optional.of(project));
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        ProjectDto actual = projectService.getProjectById(id);
+        ProjectDto result = projectService.getProjectById(id);
 
-        assertNotNull(actual);
-        assertEquals(project.getTitle(), actual.getTitle());
-        assertEquals("Shadowfall System", actual.getTitle());
+        assertNotNull(result);
+        assertEquals("Shadowfall System", result.getTitle());
 
         verify(projectRepository).findById(id);
         verify(authServiceHelper).getCurrentUser();
@@ -158,30 +140,23 @@ class ProjectServiceImplTest {
     }
 
     @Test
-    @DisplayName("Update Project, success")
+    @DisplayName("Update project success")
     void updateProject_success() {
         Long id = 1L;
 
-        ProjectStatus inProgressStatus = new ProjectStatus();
-        inProgressStatus.setStatusProject(ProjectStatus.StatusProject.IN_PROGRESS);
-
         when(projectRepository.findById(id)).thenReturn(Optional.of(project));
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
-        when(projectStatusRepository.findByStatusProject(ProjectStatus.StatusProject.IN_PROGRESS))
-                .thenReturn(Optional.of(inProgressStatus));
-
         doNothing().when(projectMapper).updateProjectFromDto(projectUpdateDto, project);
         when(projectRepository.save(project)).thenReturn(project);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        ProjectDto actual = projectService.updateProject(id, projectUpdateDto);
+        ProjectDto updated = projectService.updateProject(id, projectUpdateDto);
 
-        assertNotNull(actual);
-        assertEquals("Shadowfall System", actual.getTitle());
+        assertNotNull(updated);
+        assertEquals("Shadowfall System", updated.getTitle());
 
         verify(projectRepository).findById(id);
         verify(authServiceHelper).getCurrentUser();
-        verify(projectStatusRepository).findByStatusProject(ProjectStatus.StatusProject.IN_PROGRESS);
         verify(projectMapper).updateProjectFromDto(projectUpdateDto, project);
         verify(projectRepository).save(project);
         verify(projectMapper).toDto(project);

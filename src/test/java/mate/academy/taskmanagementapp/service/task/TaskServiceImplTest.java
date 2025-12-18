@@ -10,9 +10,7 @@ import mate.academy.taskmanagementapp.model.project.Project;
 import mate.academy.taskmanagementapp.repository.AttachmentRepository;
 import mate.academy.taskmanagementapp.repository.LabelRepository;
 import mate.academy.taskmanagementapp.repository.ProjectRepository;
-import mate.academy.taskmanagementapp.repository.TaskPriorityRepository;
 import mate.academy.taskmanagementapp.repository.TaskRepository;
-import mate.academy.taskmanagementapp.repository.TaskStatusRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import mate.academy.taskmanagementapp.service.dropbox.DropboxService;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,11 +60,6 @@ class TaskServiceImplTest {
     @Mock
     private LabelRepository labelRepository;
 
-    @Mock
-    private TaskPriorityRepository taskPriorityRepository;
-
-    @Mock
-    private TaskStatusRepository taskStatusRepository;
 
     @InjectMocks
     private TaskServiceImpl taskService;

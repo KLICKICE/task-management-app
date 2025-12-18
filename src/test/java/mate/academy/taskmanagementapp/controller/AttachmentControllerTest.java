@@ -48,7 +48,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -86,7 +85,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_attachment.sql"
@@ -114,7 +112,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_attachment.sql"

@@ -19,9 +19,7 @@ import mate.academy.taskmanagementapp.model.role.Role;
 import mate.academy.taskmanagementapp.model.user.User;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -48,11 +46,7 @@ class ProjectRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ProjectStatusRepository projectStatusRepository;
-
     private User savedUser;
-    private ProjectStatus savedStatus;
 
     @BeforeEach
     void setUp() {
@@ -68,10 +62,6 @@ class ProjectRepositoryTest {
         user.setPassword(passwordEncoder.encode("Sunless07062006"));
         user.setRoles(Set.of(savedRole));
         savedUser = userRepository.save(user);
-
-        ProjectStatus status = new ProjectStatus();
-        status.setStatusProject(ProjectStatus.StatusProject.INITIATED);
-        savedStatus = projectStatusRepository.save(status);
     }
 
     @Test
@@ -81,7 +71,7 @@ class ProjectRepositoryTest {
         project.setTitle("Shadowfall System");
         project.setDescription("A project born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedStatus);
+        project.setStatus(ProjectStatus.INITIATED);
         project.setStartDate(LocalDate.now());
 
         Project savedProject = projectRepository.save(project);
@@ -89,7 +79,7 @@ class ProjectRepositoryTest {
         assertNotNull(savedProject.getId());
         assertEquals("Shadowfall System", savedProject.getTitle());
         assertEquals(savedUser.getId(), savedProject.getOwner().getId());
-        assertEquals(savedStatus.getStatusProject(), savedProject.getStatus().getStatusProject());
+        assertEquals(ProjectStatus.INITIATED, savedProject.getStatus());
         assertNotNull(savedProject.getCreatedAt());
     }
 
@@ -100,7 +90,7 @@ class ProjectRepositoryTest {
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedStatus);
+        project.setStatus(ProjectStatus.INITIATED);
         project.setStartDate(LocalDate.now());
         projectRepository.save(project);
 
@@ -118,14 +108,14 @@ class ProjectRepositoryTest {
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedStatus);
+        project.setStatus(ProjectStatus.INITIATED);
         project.setStartDate(LocalDate.now());
         projectRepository.save(project);
 
-        List<Project> projects = projectRepository.findAllByStatus_StatusProject(ProjectStatus.StatusProject.INITIATED);
+        List<Project> projects = projectRepository.findAllByStatus(ProjectStatus.INITIATED);
 
         assertNotNull(projects);
         assertFalse(projects.isEmpty());
-        assertEquals(ProjectStatus.StatusProject.INITIATED, projects.get(0).getStatus().getStatusProject());
+        assertEquals(ProjectStatus.INITIATED, projects.get(0).getStatus());
     }
 }
