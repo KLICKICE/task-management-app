@@ -34,7 +34,7 @@ public class UserController {
     private final AuthenticationService authenticationService;
     private final AuthServiceHelper authServiceHelper;
 
-    @PostMapping("/auth/register")
+    @PostMapping("/register")
     public UserResponseDto register(@Valid @RequestBody UserRegistrationDto dto) {
         return userService.register(dto);
     }

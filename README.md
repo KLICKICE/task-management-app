@@ -1,6 +1,54 @@
 # Task Management App (Spring Boot)
 
+![Java](https://img.shields.io/badge/Java-17-informational?style=for-the-badge)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-informational?style=for-the-badge)
+![Maven](https://img.shields.io/badge/Maven-Build-informational?style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-Compose-informational?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-8-informational?style=for-the-badge)
+![Liquibase](https://img.shields.io/badge/Liquibase-Migrations-informational?style=for-the-badge)
+![JWT](https://img.shields.io/badge/Auth-JWT-informational?style=for-the-badge)
+![MapStruct](https://img.shields.io/badge/MapStruct-Mapper-informational?style=for-the-badge)
+![Lombok](https://img.shields.io/badge/Lombok-Annotations-informational?style=for-the-badge)
+![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-informational?style=for-the-badge)
+![Dropbox](https://img.shields.io/badge/Storage-Dropbox-informational?style=for-the-badge)
+
 A REST API for managing projects and tasks: user registration/authentication, CRUD for projects and tasks, task comments, labels, and file attachments (files are stored in **Dropbox**, while the database stores only Dropbox reference/metadata).
+
+## Clone & run
+
+### Clone the repository
+
+```bash
+git clone <REPO_URL>
+cd <REPO_FOLDER>
+```
+
+### Run with Maven (local)
+
+```bash
+./mvnw spring-boot:run
+```
+
+### Run with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+### Environment variables (example, **no secrets**)
+
+> Store real secrets (DB passwords, Dropbox token) in your local `.env` file or CI secrets — never commit them.
+
+```env
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3307/task_management
+SPRING_DATASOURCE_USERNAME=db_user
+SPRING_DATASOURCE_PASSWORD=db_password_placeholder
+SPRING_DOCKER_PORT=8080
+
+DROPBOX_ACCESS_TOKEN=dropbox_token_placeholder
+```
+
+---
 
 ## Tech stack
 

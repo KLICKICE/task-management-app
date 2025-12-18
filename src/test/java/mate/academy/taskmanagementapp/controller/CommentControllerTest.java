@@ -56,7 +56,7 @@ class CommentControllerTest {
         dto.setText("Test Comment");
         dto.setTaskId(taskId);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/comments")
+        MvcResult mvcResult = mockMvc.perform(post("/comments")
                         .content(toJson(dto))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -86,7 +86,7 @@ class CommentControllerTest {
     )
     @DisplayName("Get comments by taskId successfully")
     void getComment_successfully() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/comments")
+        MvcResult mvcResult = mockMvc.perform(get("/comments")
                         .param("taskId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();

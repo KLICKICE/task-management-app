@@ -44,7 +44,7 @@ class LabelControllerTest {
         CreateLabelRequestDto request = createLabelRequestDto("Important");
 
         // when
-        MvcResult result = mockMvc.perform(post("/api/labels")
+        MvcResult result = mockMvc.perform(post("/labels")
                         .content(toJson(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -73,7 +73,7 @@ class LabelControllerTest {
     @Sql(scripts = "/testData/label.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Get all labels successfully")
     void getAllLabels_success() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/labels")
+        MvcResult result = mockMvc.perform(get("/labels")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -97,7 +97,7 @@ class LabelControllerTest {
         updateDto.setColor("green");
 
         // when
-        MvcResult result = mockMvc.perform(put("/api/labels/{id}", 1)
+        MvcResult result = mockMvc.perform(put("/labels/{id}", 1)
                         .content(toJson(updateDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

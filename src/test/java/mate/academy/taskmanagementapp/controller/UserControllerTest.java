@@ -46,7 +46,7 @@ class UserControllerTest {
         request.setPassword("password123");
 
         MvcResult result = mockMvc.perform(
-                        post("/api/auth/register")
+                        post("/auth/register")
                                 .content(toJson(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -73,7 +73,7 @@ class UserControllerTest {
         loginDto.setPassword("password123");
 
         MvcResult result = mockMvc.perform(
-                        post("/api/auth/login")
+                        post("/auth/login")
                                 .content(toJson(loginDto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -94,7 +94,7 @@ class UserControllerTest {
     )
     @DisplayName("Get current user successfully")
     void getCurrentUser_success() throws Exception {
-        mockMvc.perform(get("/api/users/me"))
+        mockMvc.perform(get("/users/me"))
                 .andExpect(status().isOk());
     }
 
@@ -112,7 +112,7 @@ class UserControllerTest {
         updateDto.setEmail("updated@example.com");
 
         mockMvc.perform(
-                        put("/api/users/me")
+                        put("/users/me")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(toJson(updateDto))
                 )
@@ -133,7 +133,7 @@ class UserControllerTest {
         dto.setRepeatNewPassword("newPassword123");
 
         mockMvc.perform(
-                        patch("/api/users/me/password")
+                        patch("/users/me/password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(toJson(dto))
                 )
@@ -151,7 +151,7 @@ class UserControllerTest {
         Long userId = 1L;
 
         mockMvc.perform(
-                        put("/api/users/{id}/role", userId)
+                        put("/users/{id}/role", userId)
                                 .param("roleName", "ADMIN")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )

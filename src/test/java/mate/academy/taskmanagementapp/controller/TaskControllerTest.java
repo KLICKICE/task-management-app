@@ -188,7 +188,7 @@ class TaskControllerTest {
         Long taskId = 1L;
 
         MvcResult mvcResult = mockMvc.perform(
-                        get("/api/tasks/{id}/labels", taskId)
+                        get("/tasks/{id}/labels", taskId)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())

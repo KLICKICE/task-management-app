@@ -60,7 +60,7 @@ class ProjectControllerTest {
         dto.setStartDate(LocalDate.now());
         dto.setEndDate(LocalDate.now().plusDays(7));
 
-        MvcResult result = mockMvc.perform(post("/api/projects")
+        MvcResult result = mockMvc.perform(post("/projects")
                         .content(toJson(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -87,7 +87,7 @@ class ProjectControllerTest {
     @DisplayName("Get a project successfully")
     void getProjectById() throws Exception {
         Long projectId = 1L;
-        mockMvc.perform(get("/api/projects/{id}", projectId))
+        mockMvc.perform(get("/projects/{id}", projectId))
                 .andExpect(status().isOk());
     }
 
@@ -105,7 +105,7 @@ class ProjectControllerTest {
     )
     @DisplayName("Get all projects from user successfully")
     void getUserProjects() throws Exception {
-        mockMvc.perform(get("/api/projects/my-projects"))
+        mockMvc.perform(get("/projects/my-projects"))
                 .andExpect(status().isOk());
     }
 
@@ -130,7 +130,7 @@ class ProjectControllerTest {
         dto.setProjectStatus("COMPLETED");
         dto.setEndDate(LocalDate.now().plusDays(10));
 
-        MvcResult result = mockMvc.perform(put("/api/projects/{id}", projectId)
+        MvcResult result = mockMvc.perform(put("/projects/{id}", projectId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk())
@@ -156,7 +156,7 @@ class ProjectControllerTest {
     @DisplayName("Delete a project successfully")
     void deleteProject() throws Exception {
         Long projectId = 1L;
-        mockMvc.perform(delete("/api/projects/{id}", projectId))
+        mockMvc.perform(delete("/projects/{id}", projectId))
                 .andExpect(status().isNoContent());
     }
 
