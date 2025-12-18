@@ -1,8 +1,12 @@
 package mate.academy.taskmanagementapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import mate.academy.taskmanagementapp.dto.user.*;
+import mate.academy.taskmanagementapp.dto.user.ChangePasswordRequestDto;
+import mate.academy.taskmanagementapp.dto.user.UserLoginDto;
+import mate.academy.taskmanagementapp.dto.user.UserLoginResponseDto;
+import mate.academy.taskmanagementapp.dto.user.UserRegistrationDto;
+import mate.academy.taskmanagementapp.dto.user.UserResponseDto;
+import mate.academy.taskmanagementapp.dto.user.UserUpdateDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -153,7 +160,6 @@ class UserControllerTest {
         mockMvc.perform(
                         put("/users/{id}/role", userId)
                                 .param("roleName", "ADMIN")
-                                .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk());
     }

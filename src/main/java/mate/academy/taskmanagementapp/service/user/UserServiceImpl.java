@@ -18,6 +18,7 @@ import mate.academy.taskmanagementapp.repository.RoleRepository;
 import mate.academy.taskmanagementapp.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,64 +29,82 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     @Override
-    public UserResponseDto register(UserRegistrationDto userRegistrationDto) {
-        if (userRepository.existsByUsername(userRegistrationDto.getUsername())) {
-            throw new RegistrationException(
-                    "User with username '" + userRegistrationDto.getUsername() + "' already exists"
-            );
+    @Transactional
+    public UserResponseDto register(UserRegistrationDto dto) {
+        String username = dto.getUsername();
+
+        if (userRepository.existsByUsername(username)) {
+            throw new RegistrationException("User with username='%s' already exists"
+                    .formatted(username));
         }
 
-        User user = userMapper.toEntity(userRegistrationDto);
-        user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
+        User user = userMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         Role userRole = roleRepository.findByRoleName(Role.RoleName.USER)
-                .orElseThrow(()
-                        -> new EntityNotFoundException("Role "
-                        + Role.RoleName.USER + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role with roleName=%s not found"
+                        .formatted(Role.RoleName.USER)));
+
         user.setRoles(Set.of(userRole));
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponseDto findById(Long id) {
-        User userById = userRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException("Can't find user by id: " + id));
-        return userMapper.toDto(userById);
+        User user = userRepository.findById(id)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                "User with id=%d not found".formatted(id)));
+        return userMapper.toDto(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponseDto login(UserLoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        String username = loginDto.getUsername();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User with username='%s' not found"
+                        .formatted(username)));
 
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new AuthenticationException("Invalid password");
+            throw new AuthenticationException(
+                    "Invalid password for username='%s'".formatted(username));
         }
 
         return userMapper.toDto(user);
     }
 
     @Override
+    @Transactional
     public UserResponseDto updateProfile(Long id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + id));
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                "User with id=%d not found".formatted(id)));
+
         userMapper.updateUserFromDto(userUpdateDto, user);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
+    @Transactional
     public UserResponseDto changePassword(Long id, ChangePasswordRequestDto dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with id=%d not found".formatted(id)));
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-            throw new AuthenticationException("Current password is incorrect");
+            throw new AuthenticationException(
+                    "Current password is incorrect for userId=%d".formatted(id));
         }
 
         if (!dto.getNewPassword().equals(dto.getRepeatNewPassword())) {
-            throw new AuthenticationException("New password and повтор не співпадають");
+            throw new AuthenticationException(
+                    "New password and repeat do not match for userId=%d".formatted(id));
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
@@ -93,11 +112,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void assignRole(Long id, Role.RoleName roleName) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with id=%d not found".formatted(id)));
+
         Role role = roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Role with roleName=%s not found".formatted(roleName)));
+
         user.getRoles().add(role);
         userRepository.save(user);
     }
