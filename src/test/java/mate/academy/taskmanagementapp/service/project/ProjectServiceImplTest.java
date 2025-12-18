@@ -102,7 +102,6 @@ class ProjectServiceImplTest {
     @Test
     @DisplayName("Create project, success")
     void createProject_success() {
-        // given
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectMapper.toEntity(createProjectRequestDto)).thenReturn(project);
         when(projectStatusRepository.findByStatusProject(ProjectStatus.StatusProject.INITIATED))
@@ -110,10 +109,8 @@ class ProjectServiceImplTest {
         when(projectRepository.save(project)).thenReturn(project);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        // when
         ProjectDto createdProject = projectService.createProject(createProjectRequestDto);
 
-        // then
         assertNotNull(createdProject);
         assertEquals("Shadowfall System", createdProject.getTitle());
 
@@ -145,15 +142,12 @@ class ProjectServiceImplTest {
     void getProject_ById_success() {
         Long id = 1L;
 
-        // given
         when(projectRepository.findById(id)).thenReturn(Optional.of(project));
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        // when
         ProjectDto actual = projectService.getProjectById(id);
 
-        // then
         assertNotNull(actual);
         assertEquals(project.getTitle(), actual.getTitle());
         assertEquals("Shadowfall System", actual.getTitle());
@@ -171,7 +165,6 @@ class ProjectServiceImplTest {
         ProjectStatus inProgressStatus = new ProjectStatus();
         inProgressStatus.setStatusProject(ProjectStatus.StatusProject.IN_PROGRESS);
 
-        // given
         when(projectRepository.findById(id)).thenReturn(Optional.of(project));
         when(authServiceHelper.getCurrentUser()).thenReturn(user);
         when(projectStatusRepository.findByStatusProject(ProjectStatus.StatusProject.IN_PROGRESS))
@@ -181,10 +174,8 @@ class ProjectServiceImplTest {
         when(projectRepository.save(project)).thenReturn(project);
         when(projectMapper.toDto(project)).thenReturn(projectDto);
 
-        // when
         ProjectDto actual = projectService.updateProject(id, projectUpdateDto);
 
-        // then
         assertNotNull(actual);
         assertEquals("Shadowfall System", actual.getTitle());
 

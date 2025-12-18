@@ -84,7 +84,6 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Register new user successfully")
     void registerUser_Success() {
-        // given
         when(userRepository.existsByUsername(registrationDto.getUsername())).thenReturn(false);
         when(userMapper.toEntity(registrationDto)).thenReturn(user);
         when(passwordEncoder.encode(registrationDto.getPassword())).thenReturn("encodedPassword");
@@ -92,10 +91,8 @@ class UserServiceImplTest {
         when(userRepository.save(user)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(responseDto);
 
-        // when
         UserResponseDto actual = userService.register(registrationDto);
 
-        // then
         assertNotNull(actual);
         assertEquals("LostFromLight", actual.getUsername());
         verify(userRepository).existsByUsername("LostFromLight");
@@ -128,10 +125,8 @@ class UserServiceImplTest {
     void findUserBy_Id_NotFound() {
         Long id = 99L;
 
-        // given
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        // when + then
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
                 () -> userService.findById(id)
@@ -151,10 +146,8 @@ class UserServiceImplTest {
                 .thenReturn(true);
         when(userMapper.toDto(user)).thenReturn(responseDto);
 
-        // when
         UserResponseDto actual = userService.login(loginDto);
 
-        // then
         assertNotNull(actual);
         assertEquals("LostFromLight", actual.getUsername());
         verify(userRepository).findByUsername("LostFromLight");
@@ -167,17 +160,14 @@ class UserServiceImplTest {
     void update_Success() {
         Long id = 1L;
 
-        // given
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
         doNothing().when(userMapper).updateUserFromDto(updateDto, user);
         when(userRepository.save(user)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(responseDto);
 
-        // when
         UserResponseDto actual = userService.updateProfile(id, updateDto);
 
-        // then
         assertNotNull(actual);
         assertEquals("LostFromLight", actual.getUsername());
 

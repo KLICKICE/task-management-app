@@ -40,17 +40,14 @@ class LabelControllerTest {
     @Sql(scripts = "/testData/clean.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Create a new label successfully")
     void createLabel_ValidRequestDto_success() throws Exception {
-        // given
         CreateLabelRequestDto request = createLabelRequestDto("Important");
 
-        // when
         MvcResult result = mockMvc.perform(post("/labels")
                         .content(toJson(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        // then
         LabelDto actual = fromJson(result, LabelDto.class);
 
         assertNotNull(actual);
@@ -64,7 +61,7 @@ class LabelControllerTest {
     @Sql(scripts = "/testData/label.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Delete existing label by id successfully")
     void deleteLabelById_ValidId_success() throws Exception {
-        mockMvc.perform(delete("/api/labels/{id}", 1))
+        mockMvc.perform(delete("/labels/{id}", 1))
                 .andExpect(status().isNoContent());
     }
 
@@ -91,19 +88,16 @@ class LabelControllerTest {
     @Sql(scripts = "/testData/label.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Update existing label successfully")
     void updateLabel_ValidRequestDto_success() throws Exception {
-        // given
         UpdateLabelDto updateDto = new UpdateLabelDto();
         updateDto.setName("Updated Label");
         updateDto.setColor("green");
 
-        // when
         MvcResult result = mockMvc.perform(put("/labels/{id}", 1)
                         .content(toJson(updateDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // then
         LabelDto actual = fromJson(result, LabelDto.class);
 
         assertNotNull(actual);

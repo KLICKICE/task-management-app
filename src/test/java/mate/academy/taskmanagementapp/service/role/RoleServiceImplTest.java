@@ -38,14 +38,11 @@ class RoleServiceImplTest {
     @Test
     @DisplayName("Find role by RoleName successfully")
     void findByRoleName_Success() {
-        // given
         when(roleRepository.findByRoleName(Role.RoleName.ADMIN))
                 .thenReturn(Optional.of(role));
 
-        // when
         Optional<Role> result = roleService.findByRoleName(Role.RoleName.ADMIN);
 
-        // then
         assertTrue(result.isPresent());
         assertEquals(Role.RoleName.ADMIN, result.get().getRoleName());
         verify(roleRepository, times(1)).findByRoleName(Role.RoleName.ADMIN);
@@ -54,14 +51,11 @@ class RoleServiceImplTest {
     @Test
     @DisplayName("Find role by RoleName returns empty when not found")
     void findByRoleName_NotFound() {
-        // given
         when(roleRepository.findByRoleName(Role.RoleName.USER))
                 .thenReturn(Optional.empty());
 
-        // when
         Optional<Role> result = roleService.findByRoleName(Role.RoleName.USER);
 
-        // then
         assertTrue(result.isEmpty());
         verify(roleRepository, times(1)).findByRoleName(Role.RoleName.USER);
     }

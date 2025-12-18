@@ -62,7 +62,7 @@ class TaskControllerTest {
         dto.setProjectId(1L);
 
         MvcResult mvcResult = mockMvc.perform(
-                        post("/api/tasks")
+                        post("/tasks")
                                 .content(toJson(dto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -99,7 +99,7 @@ class TaskControllerTest {
         dto.setTaskStatus("DONE");
         dto.setAssignedUserEmail("user@example.com");
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/tasks/{id}", id)
+        MvcResult mvcResult = mockMvc.perform(put("/tasks/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk())
@@ -127,7 +127,7 @@ class TaskControllerTest {
     @DisplayName("Delete task successfully")
     void deleteTask_success() throws Exception {
         Long id = 1L;
-        mockMvc.perform(delete("/api/tasks/{id}", id))
+        mockMvc.perform(delete("/tasks/{id}", id))
                 .andExpect(status().isNoContent());
     }
 
@@ -149,7 +149,7 @@ class TaskControllerTest {
         Long projectId = 1L;
 
         MvcResult mvcResult = mockMvc.perform(
-                        get("/api/tasks")
+                        get("/tasks")
                                 .param("projectId", String.valueOf(projectId))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
