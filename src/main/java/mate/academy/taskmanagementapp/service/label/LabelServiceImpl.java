@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LabelServiceImpl implements LabelService {
+
     private final LabelRepository labelRepository;
     private final LabelMapper labelMapper;
 
@@ -27,13 +28,18 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public List<LabelDto> getAllLabels() {
         return labelRepository.findAll()
-                .stream().map(labelMapper::toDto).toList();
+                .stream()
+                .map(labelMapper::toDto)
+                .toList();
     }
 
     @Override
     public LabelDto updateLabelFromDto(Long id, UpdateLabelDto updateLabelDto) {
         Label label = labelRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Label not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Label with id=%d not found".formatted(id)
+                ));
+
         labelMapper.updateLabelFromDto(updateLabelDto, label);
         return labelMapper.toDto(labelRepository.save(label));
     }
@@ -41,7 +47,10 @@ public class LabelServiceImpl implements LabelService {
     @Override
     public void deleteLabel(Long id) {
         Label label = labelRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Label not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Label with id=%d not found".formatted(id)
+                ));
+
         labelRepository.delete(label);
     }
 }

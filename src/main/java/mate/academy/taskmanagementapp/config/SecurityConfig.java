@@ -33,31 +33,21 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/v3/api-docs/**",
+                                "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(
-                        jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                )
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(
-                                        HttpServletResponse.SC_UNAUTHORIZED,
-                                        "Unauthorized"
-                                )
-                        )
+                        .authenticationEntryPoint((request,
+                                                   response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                                        "Unauthorized"))
                         .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendError(
-                                        HttpServletResponse.SC_FORBIDDEN,
-                                        "Forbidden"
-                                )
-                        )
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
                 );
 
         return http.build();
@@ -78,8 +68,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authConfig
-    ) throws Exception {
+            AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 }

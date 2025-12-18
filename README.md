@@ -352,11 +352,6 @@ src/main/java/mate/academy/taskmanagementapp
 
 ---
 
-## License
-
-Educational project (Mate Academy).
-
----
 
 >✅ Made by **Oleksandr Sunless**
 

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
+
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final AuthServiceHelper authServiceHelper;
@@ -33,7 +34,6 @@ public class ProjectServiceImpl implements ProjectService {
         Project entity = projectMapper.toEntity(dto);
         entity.setOwner(currentUser);
         entity.setCreatedAt(LocalDateTime.now());
-
         entity.setStatus(ProjectStatus.INITIATED);
 
         return projectMapper.toDto(projectRepository.save(entity));
@@ -54,7 +54,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectDto getProjectById(Long id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Project with id=%d not found".formatted(id)
+                ));
 
         validateUserPermission(project, authServiceHelper.getCurrentUser());
         return projectMapper.toDto(project);
@@ -64,7 +66,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public ProjectDto updateProject(Long id, ProjectUpdateDto dto) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Project with id=%d not found".formatted(id)
+                ));
 
         User currentUser = authServiceHelper.getCurrentUser();
         validateUserPermission(project, currentUser);
@@ -82,7 +86,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Project with id=%d not found".formatted(id)
+                ));
 
         User currentUser = authServiceHelper.getCurrentUser();
         validateUserPermission(project, currentUser);
@@ -93,12 +99,12 @@ public class ProjectServiceImpl implements ProjectService {
     private void validateUserPermission(Project project, User currentUser) {
         boolean isAdmin = authServiceHelper.isAdmin(currentUser);
         boolean isOwner = project.getOwner() != null
-                && project.getOwner().getId() != null
                 && project.getOwner().getId().equals(currentUser.getId());
 
         if (!isAdmin && !isOwner) {
             throw new AccessDeniedException(
-                    "You are not allowed to access or modify projectId=" + project.getId()
+                    "User id=%d has no access to project id=%d"
+                            .formatted(currentUser.getId(), project.getId())
             );
         }
     }
@@ -107,7 +113,9 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             return ProjectStatus.valueOf(raw.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new EntityNotFoundException("Invalid project status: status=" + raw);
+            throw new EntityNotFoundException(
+                    "Project status=%s not found".formatted(raw)
+            );
         }
     }
 }

@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
+
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final UserRepository userRepository;
@@ -51,22 +52,23 @@ public class TaskServiceImpl implements TaskService {
 
         Project project = projectRepository.findById(dto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Project not found: projectId=" + dto.getProjectId()
+                        "Project with id=%d not found".formatted(dto.getProjectId())
                 ));
 
         boolean isAdmin = authServiceHelper.isAdmin(currentUser);
         boolean isProjectOwner = project.getOwner() != null
-                && project.getOwner().getId() != null
                 && project.getOwner().getId().equals(currentUser.getId());
 
         if (!isAdmin && !isProjectOwner) {
-            throw new AccessDeniedException("You don't have access to projectId="
-                    + dto.getProjectId());
+            throw new AccessDeniedException(
+                    "User id=%d has no access to project id=%d"
+                            .formatted(currentUser.getId(), project.getId())
+            );
         }
 
         User assignee = userRepository.findById(dto.getAssignedUserId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "User not found: userId=" + dto.getAssignedUserId()
+                        "User with id=%d not found".formatted(dto.getAssignedUserId())
                 ));
 
         Task task = taskMapper.toEntity(dto);
@@ -90,7 +92,9 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public TaskDto getTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(id)
+                ));
         return taskMapper.toDto(task);
     }
 
@@ -98,7 +102,9 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto updateTask(Long id, TaskUpdatedDto dto) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(id)
+                ));
 
         User currentUser = authServiceHelper.getCurrentUser();
         validateUserPermission(task, currentUser);
@@ -108,13 +114,13 @@ public class TaskServiceImpl implements TaskService {
         if (dto.getAssignedUserId() != null) {
             User user = userRepository.findById(dto.getAssignedUserId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "User not found: userId=" + dto.getAssignedUserId()
+                            "User with id=%d not found".formatted(dto.getAssignedUserId())
                     ));
             task.setAssignedUser(user);
         } else if (dto.getAssignedUserEmail() != null) {
             User user = userRepository.findByEmail(dto.getAssignedUserEmail())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "User not found: email=" + dto.getAssignedUserEmail()
+                            "User with email=%s not found".formatted(dto.getAssignedUserEmail())
                     ));
             task.setAssignedUser(user);
         }
@@ -134,7 +140,9 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: id=" + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(id)
+                ));
 
         User currentUser = authServiceHelper.getCurrentUser();
         validateUserPermission(task, currentUser);
@@ -143,20 +151,21 @@ public class TaskServiceImpl implements TaskService {
 
         for (Attachment attachment : attachments) {
             String dropboxFileId = attachment.getDropboxFileId();
-            if (dropboxFileId == null || dropboxFileId.isBlank()) {
-                continue;
-            }
-            try {
-                dropboxService.deleteFile(dropboxFileId);
-            } catch (Exception e) {
-                log.warn("Failed to delete Dropbox file: {}", dropboxFileId, e);
+            if (dropboxFileId != null && !dropboxFileId.isBlank()) {
+                try {
+                    dropboxService.deleteFile(dropboxFileId);
+                } catch (Exception e) {
+                    log.warn(
+                            "Failed to delete Dropbox file id=%s for task id=%d"
+                                    .formatted(dropboxFileId, task.getId()),
+                            e
+                    );
+                }
             }
         }
 
         attachmentRepository.deleteAll(attachments);
         taskRepository.delete(task);
-
-        log.info("Task {} deleted by user {}", id, currentUser.getEmail());
     }
 
     @Override
@@ -165,19 +174,23 @@ public class TaskServiceImpl implements TaskService {
         User currentUser = authServiceHelper.getCurrentUser();
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found: projectId="
-                        + projectId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Project with id=%d not found".formatted(projectId)
+                ));
 
         boolean isAdmin = authServiceHelper.isAdmin(currentUser);
         boolean isOwner = project.getOwner() != null
-                && project.getOwner().getId() != null
                 && project.getOwner().getId().equals(currentUser.getId());
 
         if (!isAdmin && !isOwner) {
-            throw new AccessDeniedException("You don't have access to projectId=" + projectId);
+            throw new AccessDeniedException(
+                    "User id=%d has no access to project id=%d"
+                            .formatted(currentUser.getId(), projectId)
+            );
         }
 
-        return taskRepository.findAllByProjectId(projectId).stream()
+        return taskRepository.findAllByProjectId(projectId)
+                .stream()
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -186,11 +199,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto addLabelToTask(Long taskId, Long labelId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: taskId="
-                        + taskId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(taskId)
+                ));
+
         Label label = labelRepository.findById(labelId)
-                .orElseThrow(() -> new EntityNotFoundException("Label not found: labelId="
-                        + labelId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Label with id=%d not found".formatted(labelId)
+                ));
 
         authServiceHelper.assertCanAccessTask(task);
 
@@ -202,10 +218,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto removeLabelFromTask(Long taskId, Long labelId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: taskId=" + taskId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(taskId)
+                ));
+
         Label label = labelRepository.findById(labelId)
-                .orElseThrow(() -> new EntityNotFoundException("Label not found: labelId="
-                        + labelId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Label with id=%d not found".formatted(labelId)
+                ));
 
         authServiceHelper.assertCanAccessTask(task);
 
@@ -217,7 +237,9 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public List<LabelDto> getTaskLabels(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found: taskId=" + taskId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(taskId)
+                ));
 
         authServiceHelper.assertCanAccessTask(task);
 
@@ -228,18 +250,17 @@ public class TaskServiceImpl implements TaskService {
 
     private void validateUserPermission(Task task, User currentUser) {
         boolean isAdmin = authServiceHelper.isAdmin(currentUser);
-
         boolean isAssignee = task.getAssignedUser() != null
-                && task.getAssignedUser().getId() != null
                 && task.getAssignedUser().getId().equals(currentUser.getId());
-
         boolean isProjectOwner = task.getProject() != null
                 && task.getProject().getOwner() != null
-                && task.getProject().getOwner().getId() != null
                 && task.getProject().getOwner().getId().equals(currentUser.getId());
 
         if (!isAdmin && !isAssignee && !isProjectOwner) {
-            throw new AccessDeniedException("You are not allowed to modify taskId=" + task.getId());
+            throw new AccessDeniedException(
+                    "User id=%d has no permission for task id=%d"
+                            .formatted(currentUser.getId(), task.getId())
+            );
         }
     }
 
@@ -247,7 +268,9 @@ public class TaskServiceImpl implements TaskService {
         try {
             return TaskStatus.valueOf(raw.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new EntityNotFoundException("Task status not found: status=" + raw);
+            throw new EntityNotFoundException(
+                    "Task status=%s not found".formatted(raw)
+            );
         }
     }
 
@@ -255,7 +278,9 @@ public class TaskServiceImpl implements TaskService {
         try {
             return TaskPriority.valueOf(raw.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new EntityNotFoundException("Task priority not found: priority=" + raw);
+            throw new EntityNotFoundException(
+                    "Task priority=%s not found".formatted(raw)
+            );
         }
     }
 }
