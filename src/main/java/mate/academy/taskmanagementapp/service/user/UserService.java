@@ -10,9 +10,9 @@ import mate.academy.taskmanagementapp.model.role.Role;
 public interface UserService {
     UserResponseDto register(UserRegistrationDto userRegistrationDto);
 
-    UserResponseDto login(UserLoginDto loginDto);
-
     UserResponseDto findById(Long id);
+
+    UserResponseDto login(UserLoginDto loginDto);
 
     UserResponseDto updateProfile(Long id, UserUpdateDto userUpdateDto);
 

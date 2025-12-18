@@ -7,8 +7,10 @@ import mate.academy.taskmanagementapp.model.project.ProjectStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+
     List<Project> findAllByOwnerId(Long ownerId);
 
-    List<Project> findAllByStatus_StatusProject(ProjectStatus.StatusProject status);
+    List<Project> findAllByStatus(ProjectStatus status);
 }
+
 

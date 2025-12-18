@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/labels")
+@RequestMapping("/labels")
 @RequiredArgsConstructor
 @Tag(name = "Label management", description = "Operations related to labels")
 public class LabelController {

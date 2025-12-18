@@ -48,7 +48,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -66,7 +65,7 @@ class AttachmentControllerTest {
                 "hello".getBytes()
         );
 
-        MvcResult mvcResult = mockMvc.perform(multipart("/api/attachments")
+        MvcResult mvcResult = mockMvc.perform(multipart("/attachments")
                         .file(file)
                         .param("taskId", "1"))
                 .andExpect(status().isCreated())
@@ -86,7 +85,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_attachment.sql"
@@ -95,7 +93,7 @@ class AttachmentControllerTest {
     )
     @DisplayName("Get attachments by taskId successfully")
     void getAttachmentsByTaskId_success() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/attachments")
+        MvcResult mvcResult = mockMvc.perform(get("/attachments")
                         .param("taskId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -114,7 +112,6 @@ class AttachmentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_attachment.sql"
@@ -125,11 +122,10 @@ class AttachmentControllerTest {
     void downloadAttachment_success() throws Exception {
         byte[] bytes = "file-content".getBytes();
 
-        // insert_attachment.sql має містити dropboxFileId = "dbx-file-1" для attachment id=1
         Mockito.when(dropboxService.downloadFile("dbx-file-1"))
                 .thenReturn(bytes);
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/attachments/1/download"))
+        MvcResult mvcResult = mockMvc.perform(get("/attachments/1/download"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -137,7 +133,7 @@ class AttachmentControllerTest {
         String cd = mvcResult.getResponse().getHeader("Content-Disposition");
         assertNotNull(cd);
         assertTrue(cd.contains("attachment"));
-        assertTrue(cd.contains("test.txt")); // filename з insert_attachment.sql
+        assertTrue(cd.contains("test.txt"));
 
         assertEquals(bytes.length, mvcResult.getResponse().getContentAsByteArray().length);
         assertEquals("file-content", new String(mvcResult.getResponse().getContentAsByteArray()));

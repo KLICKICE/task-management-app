@@ -11,6 +11,7 @@ import mate.academy.taskmanagementapp.dto.task.TaskUpdatedDto;
 import mate.academy.taskmanagementapp.model.label.Label;
 import mate.academy.taskmanagementapp.model.task.Task;
 import mate.academy.taskmanagementapp.model.task.TaskPriority;
+import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,9 +32,8 @@ public interface TaskMapper {
     Task toEntity(CreateTaskRequestDto dto);
 
     @Mapping(target = "assignedUserEmail", source = "assignedUser.email")
-    @Mapping(target = "taskStatus", source = "status.statusTask")
-    @Mapping(target = "taskPriority", source = "priority.priorityStatus",
-            qualifiedByName = "priorityToTitleCase")
+    @Mapping(target = "taskStatus", source = "status", qualifiedByName = "statusToString")
+    @Mapping(target = "taskPriority", source = "priority", qualifiedByName = "priorityToTitleCase")
     @Mapping(target = "labelIds", source = "labels", qualifiedByName = "labelsToIds")
     TaskDto toDto(Task task);
 
@@ -49,12 +49,17 @@ public interface TaskMapper {
     @Mapping(target = "deadline", source = "deadline")
     void updateTaskFromDto(TaskUpdatedDto dto, @MappingTarget Task task);
 
+    @Named("statusToString")
+    default String statusToString(TaskStatus status) {
+        return status == null ? null : status.name();
+    }
+
     @Named("priorityToTitleCase")
-    default String priorityToTitleCase(TaskPriority.PriorityStatus p) {
-        if (p == null) {
+    default String priorityToTitleCase(TaskPriority priority) {
+        if (priority == null) {
             return null;
         }
-        String s = p.name().toLowerCase();
+        String s = priority.name().toLowerCase();
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 

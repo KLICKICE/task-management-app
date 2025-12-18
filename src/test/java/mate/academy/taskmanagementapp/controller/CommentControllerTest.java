@@ -42,7 +42,6 @@ class CommentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -56,7 +55,7 @@ class CommentControllerTest {
         dto.setText("Test Comment");
         dto.setTaskId(taskId);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/comments")
+        MvcResult mvcResult = mockMvc.perform(post("/comments")
                         .content(toJson(dto))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -77,7 +76,6 @@ class CommentControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_comment.sql"
@@ -86,7 +84,7 @@ class CommentControllerTest {
     )
     @DisplayName("Get comments by taskId successfully")
     void getComment_successfully() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/comments")
+        MvcResult mvcResult = mockMvc.perform(get("/comments")
                         .param("taskId", "1"))
                 .andExpect(status().isOk())
                 .andReturn();

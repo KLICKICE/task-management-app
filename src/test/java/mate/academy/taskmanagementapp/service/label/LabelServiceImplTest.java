@@ -58,15 +58,12 @@ class LabelServiceImplTest {
         labelDto.setName("Sunless");
         labelDto.setColor("Black");
 
-        // given
         when(labelMapper.toEntity(createLabelRequestDto)).thenReturn(label);
         when(labelRepository.save(label)).thenReturn(label);
         when(labelMapper.toDto(label)).thenReturn(labelDto);
 
-        // when
         LabelDto actualLabel = labelService.createLabel(createLabelRequestDto);
 
-        // then
         assertNotNull(actualLabel);
         assertEquals("Sunless", actualLabel.getName());
         assertEquals("Black", actualLabel.getColor());
@@ -91,15 +88,12 @@ class LabelServiceImplTest {
         labelDto.setName("Updated Sunless");
         labelDto.setColor("White");
 
-        // given
         when(labelRepository.findById(id)).thenReturn(Optional.of(label));
         when(labelRepository.save(label)).thenReturn(label);
         when(labelMapper.toDto(label)).thenReturn(labelDto);
 
-        // when
         LabelDto actual = labelService.updateLabelFromDto(id, updateLabelDto);
 
-        // then
         assertNotNull(actual);
         assertEquals("Updated Sunless", actual.getName());
         assertEquals("White", actual.getColor());
@@ -115,13 +109,10 @@ class LabelServiceImplTest {
         Long id = 1L;
         label.setId(id);
 
-        // given
         when(labelRepository.findById(id)).thenReturn(Optional.of(label));
 
-        // when & then
         assertDoesNotThrow(() -> labelService.deleteLabel(id));
 
-        // verify interactions
         verify(labelRepository).findById(id);
         verify(labelRepository).delete(label);
     }
@@ -137,14 +128,11 @@ class LabelServiceImplTest {
         labelDto.setName("Sunless");
         labelDto.setColor("Black");
 
-        // given
         when(labelRepository.findAll()).thenReturn(List.of(label));
         when(labelMapper.toDto(label)).thenReturn(labelDto);
 
-        // when
         List<LabelDto> actual = labelService.getAllLabels();
 
-        // then
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertEquals("Sunless", actual.get(0).getName());

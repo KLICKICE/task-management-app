@@ -49,7 +49,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql"
             },
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
@@ -61,8 +60,9 @@ class TaskControllerTest {
         dto.setAssignedUserId(1L);
         dto.setProjectId(1L);
 
+
         MvcResult mvcResult = mockMvc.perform(
-                        post("/api/tasks")
+                        post("/tasks")
                                 .content(toJson(dto))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -83,7 +83,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -99,7 +98,7 @@ class TaskControllerTest {
         dto.setTaskStatus("DONE");
         dto.setAssignedUserEmail("user@example.com");
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/tasks/{id}", id)
+        MvcResult mvcResult = mockMvc.perform(put("/tasks/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk())
@@ -118,7 +117,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -127,7 +125,7 @@ class TaskControllerTest {
     @DisplayName("Delete task successfully")
     void deleteTask_success() throws Exception {
         Long id = 1L;
-        mockMvc.perform(delete("/api/tasks/{id}", id))
+        mockMvc.perform(delete("/tasks/{id}", id))
                 .andExpect(status().isNoContent());
     }
 
@@ -138,7 +136,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql"
             },
@@ -149,7 +146,7 @@ class TaskControllerTest {
         Long projectId = 1L;
 
         MvcResult mvcResult = mockMvc.perform(
-                        get("/api/tasks")
+                        get("/tasks")
                                 .param("projectId", String.valueOf(projectId))
                                 .accept(MediaType.APPLICATION_JSON)
                 )
@@ -175,7 +172,6 @@ class TaskControllerTest {
                     "/testData/clean.sql",
                     "/testData/insert_roles.sql",
                     "/testData/insert_users.sql",
-                    "/testData/insert_project_statuses.sql",
                     "/testData/projects.sql",
                     "/testData/insert_task.sql",
                     "/testData/insert_labels.sql",
@@ -188,7 +184,7 @@ class TaskControllerTest {
         Long taskId = 1L;
 
         MvcResult mvcResult = mockMvc.perform(
-                        get("/api/tasks/{id}/labels", taskId)
+                        get("/tasks/{id}/labels", taskId)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())

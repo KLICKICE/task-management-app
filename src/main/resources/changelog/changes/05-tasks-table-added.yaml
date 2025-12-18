@@ -1,0 +1,118 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-tasks-table
+      author: oleksandr
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: priority
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: deadline
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseColumnNames: project_id
+            baseTableName: tasks
+            referencedColumnNames: id
+            referencedTableName: projects
+            constraintName: fk_tasks_project
+            onDelete: SET NULL
+
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: tasks
+            referencedColumnNames: id
+            referencedTableName: users
+            constraintName: fk_tasks_user
+            onDelete: SET NULL
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_project_id
+            columns:
+              - column:
+                  name: project_id
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_deadline
+            columns:
+              - column:
+                  name: deadline
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_priority
+            columns:
+              - column:
+                  name: priority

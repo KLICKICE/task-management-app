@@ -24,9 +24,7 @@ import mate.academy.taskmanagementapp.model.task.TaskStatus;
 import mate.academy.taskmanagementapp.model.user.User;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -59,15 +57,6 @@ class CommentRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ProjectStatusRepository projectStatusRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
-    private TaskPriorityRepository taskPriorityRepository;
-
     private User savedUser;
     private Project savedProject;
     private Task savedTask;
@@ -87,32 +76,20 @@ class CommentRepositoryTest {
         user.setRoles(Set.of(savedRole));
         savedUser = userRepository.save(user);
 
-        ProjectStatus projectStatus = new ProjectStatus();
-        projectStatus.setStatusProject(ProjectStatus.StatusProject.INITIATED);
-        ProjectStatus savedProjectStatus = projectStatusRepository.save(projectStatus);
-
         Project project = new Project();
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedProjectStatus);
+        project.setStatus(ProjectStatus.INITIATED);
         project.setStartDate(LocalDate.now());
         savedProject = projectRepository.save(project);
-
-        TaskStatus status = new TaskStatus();
-        status.setStatusTask(TaskStatus.StatusTask.NEW);
-        TaskStatus savedStatus = taskStatusRepository.save(status);
-
-        TaskPriority priority = new TaskPriority();
-        priority.setPriorityStatus(TaskPriority.PriorityStatus.HIGH);
-        TaskPriority savedPriority = taskPriorityRepository.save(priority);
 
         Task task = new Task();
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setProject(savedProject);
-        task.setStatus(savedStatus);
-        task.setPriority(savedPriority);
+        task.setStatus(TaskStatus.NEW);
+        task.setPriority(TaskPriority.HIGH);
         task.setAssignedUser(savedUser);
         task.setDeadline(LocalDateTime.now().plusDays(5));
         savedTask = taskRepository.save(task);

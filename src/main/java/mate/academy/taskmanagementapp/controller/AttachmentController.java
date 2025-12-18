@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/attachments")
+@RequestMapping("/attachments")
 @RequiredArgsConstructor
 @Tag(name = "Attachment management", description = "Operations related to attachments")
 public class AttachmentController {

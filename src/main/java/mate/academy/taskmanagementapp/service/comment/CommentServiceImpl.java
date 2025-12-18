@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
+
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final TaskRepository taskRepository;
@@ -24,8 +25,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto addComment(CreateCommentRequestDto requestDto) {
-        Task task = taskRepository.findById(requestDto.getTaskId())
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        Long taskId = requestDto.getTaskId();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(taskId)
+                ));
 
         authServiceHelper.assertCanAccessTask(task);
 
@@ -39,7 +44,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDto> getCommentsByTaskId(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Task with id=%d not found".formatted(taskId)
+                ));
 
         authServiceHelper.assertCanAccessTask(task);
 

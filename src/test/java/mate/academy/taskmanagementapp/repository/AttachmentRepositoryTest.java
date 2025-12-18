@@ -50,15 +50,6 @@ class AttachmentRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ProjectStatusRepository projectStatusRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
-    private TaskPriorityRepository taskPriorityRepository;
-
     private User savedUser;
     private Project savedProject;
     private Task savedTask;
@@ -78,32 +69,20 @@ class AttachmentRepositoryTest {
         user.setRoles(Set.of(savedRole));
         savedUser = userRepository.save(user);
 
-        ProjectStatus projectStatus = new ProjectStatus();
-        projectStatus.setStatusProject(ProjectStatus.StatusProject.INITIATED);
-        ProjectStatus savedProjectStatus = projectStatusRepository.save(projectStatus);
-
         Project project = new Project();
         project.setTitle("Shadowfall System");
         project.setDescription("Born from darkness and persistence.");
         project.setOwner(savedUser);
-        project.setStatus(savedProjectStatus);
+        project.setStatus(ProjectStatus.INITIATED); // ✅ ENUM
         project.setStartDate(LocalDate.now());
         savedProject = projectRepository.save(project);
-
-        TaskStatus status = new TaskStatus();
-        status.setStatusTask(TaskStatus.StatusTask.NEW);
-        TaskStatus savedStatus = taskStatusRepository.save(status);
-
-        TaskPriority priority = new TaskPriority();
-        priority.setPriorityStatus(TaskPriority.PriorityStatus.HIGH);
-        TaskPriority savedPriority = taskPriorityRepository.save(priority);
 
         Task task = new Task();
         task.setTitle("Implement authentication");
         task.setDescription("Develop secure login and registration flow.");
         task.setProject(savedProject);
-        task.setStatus(savedStatus);
-        task.setPriority(savedPriority);
+        task.setStatus(TaskStatus.NEW);          // ✅ ENUM
+        task.setPriority(TaskPriority.HIGH);     // ✅ ENUM
         task.setAssignedUser(savedUser);
         task.setDeadline(LocalDateTime.now().plusDays(5));
         savedTask = taskRepository.save(task);
@@ -135,11 +114,13 @@ class AttachmentRepositoryTest {
         attachment.setFileName("login-api.docx");
         attachmentRepository.save(attachment);
 
-        List<Attachment> attachments = attachmentRepository.findAllByTaskId(savedTask.getId());
+        List<Attachment> attachments =
+                attachmentRepository.findAllByTaskId(savedTask.getId());
 
         assertNotNull(attachments);
-        assertFalse(attachments.isEmpty(), "Expected at least one attachment");
+        assertFalse(attachments.isEmpty());
         assertEquals("login-api.docx", attachments.get(0).getFileName());
         assertEquals(savedTask.getId(), attachments.get(0).getTask().getId());
     }
 }
+
